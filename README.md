@@ -2,6 +2,11 @@
 
 This is a web app designed for sports leagues to manage games, schedules, and standings all in one place. My goal as a software engineer is to get into sports software development, so this is one of my projects focusing on that. It uses React and Next.js to have a frontend and backend as well as an authentication system for users. Future development may take place depending on ideas and other work on projects. I hope you enjoy it! 
 
+## How to run 
+Hopefully by the time this project is done it is deployed on Vercel. Until then, you can clone this repository and in the directory run 
+    npm run dev
+and it should start up the project
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
