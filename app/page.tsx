@@ -68,7 +68,7 @@ export default function LoginPage() {
 
 const styles = {
     container: {
-        backgroundColor: '#bfdde2',
+        backgroundColor: '#e5f4f6',
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -77,14 +77,15 @@ const styles = {
         width: '100vw',
     },
     input: {
+        backgroundColor: '#fdfefe', 
         border: '1px solid', 
         borderColor: '#000000', 
-        padding: '20px', 
+        padding: '10px', 
         margin: '10px', 
         borderRadius: '5px',
     }, 
     button: {
-        backgroundColor: '#96d2fa',
+        backgroundColor: '#f3e6f3',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',
