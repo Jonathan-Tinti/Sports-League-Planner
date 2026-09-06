@@ -101,7 +101,7 @@ export default function Dashboard() {
                 Create League?????
             </button>
             {showForm && (
-                <div>
+                <form>
                     <input
                         type="text"
                         placeholder="League name"
@@ -116,7 +116,7 @@ export default function Dashboard() {
                     <button onClick={() => setShowForm(false)}>
                         Cancel
                     </button>
-                </div>
+                </form>
             )}
         </main>
     )
