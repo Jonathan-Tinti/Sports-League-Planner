@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
 
 type League = {
     id: string,
@@ -15,7 +16,11 @@ export default function Dashboard() {
     const [email, setEmail] = useState('');
     const [user, setUser] = useState<User | null>(null); 
     const [leagues, setLeagues] = useState<League[]>([]); 
+    const [leagueName, setLeagueName] = useState('');
+    const [leagueSeason, setLeagueSeason] = useState('');
+    const [showForm, setShowForm] = useState(false); 
     const supabase = createClient();
+    const router = useRouter();
 
     useEffect(() => {
         async function getUser() {
@@ -27,24 +32,57 @@ export default function Dashboard() {
             if (user) {
                 setEmail(user.email ?? '');
                 setUser(user); 
+            } else {
+                router.push('/'); 
             }
         }
+        async function getLeagues() {
+            if (!user) {
+                return; 
+            }
+            const { data, error } = await supabase
+                .from('leagues')
+                .select('*')
+                .eq('user_id', user.id);
+            
+            if (error) {
+                return; 
+            }
+            setLeagues(data); 
+        }
         getUser(); 
+        getLeagues(); 
     }, []); 
 
-    async function getLeagues() {
+    async function addLeague() {
         if (!user) {
             return; 
         }
-        const { data, error } = await supabase
+        const { data, error } = await supabase 
             .from('leagues')
-            .select('*')
-            .eq('user_id', user.id);
-        
+            .insert({
+                name: leagueName,
+                season: leagueSeason,
+                owner_id: user.id
+            })
+            .select()
+            .single()
         if (error) {
-            return; 
+            console.log(error); 
         }
-        setLeagues(data); 
+        console.log(data); 
+        setLeagues([...leagues, data]); 
+        const { data: member, error: memberError } = await supabase 
+            .from('league_members')
+            .insert({
+                league_id: data.id,
+                user_id: user.id,
+                role: 'owner'
+            })
+        if (memberError){
+            console.log(memberError); 
+        }
+        console.log(member); 
     }
     
     return (
@@ -59,6 +97,27 @@ export default function Dashboard() {
                     <p>{league.season}</p>
                 </div>
             ))}
+            <button onClick={() => setShowForm(true)}>
+                Create League?????
+            </button>
+            {showForm && (
+                <div>
+                    <input
+                        type="text"
+                        placeholder="League name"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Season"
+                    />
+                    <button type="submit" onClick={() => addLeague()}>
+                        Create
+                    </button>
+                    <button onClick={() => setShowForm(false)}>
+                        Cancel
+                    </button>
+                </div>
+            )}
         </main>
     )
 
