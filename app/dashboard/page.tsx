@@ -86,46 +86,57 @@ export default function Dashboard() {
     }
     
     return (
-        <main style={styles.container}>
-            <h1>Soccer League</h1>
-            <p>Welcome!</p>
-            <p>Logged in as: {email}</p>
-            <h2>Your Leagues:</h2>
-            {leagues.map((league) => (
-                <div key={league.id}>
-                    <h2>{league.name}</h2>
-                    <p>{league.season}</p>
-                </div>
-            ))}
-            <button onClick={() => setShowForm(true)}>
-                Create League?????
-            </button>
+        <div style={styles.container}>
+            <div style={styles.subContainer}>
+                <h1 style={styles.title}>Soccer League</h1>
+                <p style={styles.text}>Welcome!</p>
+                <p style={styles.text}>Logged in as: {email}</p>
+                <h2 style={styles.subTitle}>Your Leagues:</h2>
+                {leagues.map((league) => (
+                    <div key={league.id}>
+                        <h2>{league.name}</h2>
+                        <p>{league.season}</p>
+                    </div>
+                ))}
+                <button onClick={() => setShowForm(true)} style={styles.button}>
+                    Create League
+                </button>
+            </div>
             {showForm && (
-                <form>
-                    <input
-                        type="text"
-                        placeholder="League name"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Season"
-                    />
-                    <button type="submit" onClick={() => addLeague()}>
-                        Create
-                    </button>
-                    <button onClick={() => setShowForm(false)}>
-                        Cancel
-                    </button>
+                <form style={styles.container}>
+                    <div style={styles.subContainer}>
+                        <h1 style={styles.title}>
+                            League Form
+                        </h1>
+                        <input
+                            type="text"
+                            placeholder="League name"
+                            style={styles.input}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Season"
+                            style={styles.input}
+                        />
+                        <div>
+                            <button type="submit" onClick={() => addLeague()} style={styles.button}>
+                                Create
+                            </button>
+                            <button onClick={() => setShowForm(false)} style={styles.button}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
                 </form>
             )}
-        </main>
+        </div>
     )
 
 }
 
 const styles = {
     container: {
-        backgroundColor: '#FFFFF0',
+        backgroundColor: '#eef0f0',
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -133,27 +144,50 @@ const styles = {
         height: '100vh',
         width: '100vw',
     },
+    subContainer: {
+        backgroundColor: '#FFFFF0', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40%',
+        height: 'auto', 
+        borderRadius: '10px',
+        margin: '10px', 
+    }, 
     input: {
         backgroundColor: '#fdfefe', 
         border: '1px solid', 
         borderColor: '#000000', 
         padding: '10px', 
-        margin: '10px', 
+        margin: '10px 20px', 
         borderRadius: '5px',
     }, 
+    text: {
+        fontSize: '18px', 
+        margin: '5px', 
+    }, 
     button: {
-        backgroundColor: '#f3e6f3',
+        backgroundColor: '#e1edf8',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',
         cursor: 'pointer',
         margin: '5px', 
+        marginBottom: '15px',
         borderRadius: '5px',
     },
     title: {
         fontSize: '28px',
         fontWeight: 'bold',
-        position: 'sticky',
+        
+        marginTop: '10px', 
         top: 0
-    }
+    }, 
+    subTitle: {
+        fontSize: '24px',
+        position: 'sticky',
+        top: 0,
+        margin: '10px'
+    }, 
 } satisfies Record<string, React.CSSProperties>
