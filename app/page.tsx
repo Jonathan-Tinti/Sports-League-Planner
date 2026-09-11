@@ -8,6 +8,7 @@ export default function LoginPage() {
     const supabase = createClient(); 
     const router = useRouter();
     const [email, setEmail] = useState("");
+    const [name, setName] = useState(""); 
     const [password, setPassword] = useState(""); 
 
     async function signUp() {
@@ -42,6 +43,13 @@ export default function LoginPage() {
             <h2 style={styles.title}>
                 Welcome to Sports League Planner!
             </h2>
+            <input 
+            style={styles.input}
+            type="name"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            />
             <input 
             style={styles.input}
             type="email"

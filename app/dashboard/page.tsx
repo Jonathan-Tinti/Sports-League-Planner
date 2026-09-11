@@ -36,25 +36,34 @@ export default function Dashboard() {
                 router.push('/'); 
             }
         }
+        getUser(); 
+    }, []); 
+
+    useEffect(() => {
         async function getLeagues() {
             if (!user) {
-                return; 
+                return;
             }
+
             const { data, error } = await supabase
                 .from('leagues')
                 .select('*')
-                .eq('user_id', user.id);
-            
+                .eq('owner_id', user.id);
+
             if (error) {
-                return; 
+                console.log("Error getting leagues:", error);
+                return;
             }
-            setLeagues(data); 
+
+            console.log("Leagues:", data);
+            setLeagues(data);
         }
-        getUser(); 
-        getLeagues(); 
-    }, []); 
+
+        getLeagues();
+    }, [user]);
 
     async function addLeague() {
+        console.log("addLeague was called")
         if (!user) {
             return; 
         }
@@ -69,6 +78,7 @@ export default function Dashboard() {
             .single()
         if (error) {
             console.log(error); 
+            return; 
         }
         console.log(data); 
         setLeagues([...leagues, data]); 
@@ -81,6 +91,7 @@ export default function Dashboard() {
             })
         if (memberError){
             console.log(memberError); 
+            return; 
         }
         console.log(member); 
     }
@@ -92,18 +103,26 @@ export default function Dashboard() {
                 <p style={styles.text}>Welcome!</p>
                 <p style={styles.text}>Logged in as: {email}</p>
                 <h2 style={styles.subTitle}>Your Leagues:</h2>
-                {leagues.map((league) => (
-                    <div key={league.id}>
-                        <h2>{league.name}</h2>
-                        <p>{league.season}</p>
-                    </div>
-                ))}
+                <div style={styles.leagueContainer}>
+                    {leagues.map((league) => (
+                        <div key={league.id} style={styles.subSubContainer}>
+                            <h2>Name: {league.name}</h2>
+                            <p>Season: {league.season}</p>
+                            <button onClick={() => router.push(`/leagues/${league.id}`)} style={styles.subButton}>
+                                Visit
+                            </button>
+                        </div>
+                    ))}
+                </div>
                 <button onClick={() => setShowForm(true)} style={styles.button}>
                     Create League
                 </button>
             </div>
             {showForm && (
-                <form style={styles.container}>
+                <form style={styles.container} onSubmit={(e) => {
+                    e.preventDefault();
+                    addLeague();
+                }}>
                     <div style={styles.subContainer}>
                         <h1 style={styles.title}>
                             League Form
@@ -112,14 +131,16 @@ export default function Dashboard() {
                             type="text"
                             placeholder="League name"
                             style={styles.input}
+                            onChange={(e) => setLeagueName(e.target.value)}
                         />
                         <input
                             type="text"
                             placeholder="Season"
                             style={styles.input}
+                            onChange={(e) => setLeagueSeason(e.target.value)}
                         />
                         <div>
-                            <button type="submit" onClick={() => addLeague()} style={styles.button}>
+                            <button type="submit" style={styles.button}>
                                 Create
                             </button>
                             <button onClick={() => setShowForm(false)} style={styles.button}>
@@ -153,7 +174,22 @@ const styles = {
         width: '40%',
         height: 'auto', 
         borderRadius: '10px',
-        margin: '10px', 
+        border: '1px solid'
+    }, 
+    leagueContainer: {
+        display: 'flex',
+        flexDirection: 'row', 
+    }, 
+    subSubContainer: {
+        backgroundColor: '#FFFFF0', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '10px',
+        border: '1px solid',
+        marginBottom: '10px',
+        padding: '5px'
     }, 
     input: {
         backgroundColor: '#fdfefe', 
@@ -177,16 +213,26 @@ const styles = {
         marginBottom: '15px',
         borderRadius: '5px',
     },
+    subButton: {
+        backgroundColor: '#eff5fb',
+        border: '1px solid', 
+        borderColor: '#000000',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        margin: '3px', 
+        marginBottom: '5px',
+        borderRadius: '5px',
+    }, 
     title: {
         fontSize: '28px',
         fontWeight: 'bold',
-        
+        position: 'relative',
         marginTop: '10px', 
         top: 0
     }, 
     subTitle: {
         fontSize: '24px',
-        position: 'sticky',
+        position: 'relative',
         top: 0,
         margin: '10px'
     }, 
