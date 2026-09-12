@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from 'next/navigation';
+import PageLoader from '@/components/PageLoader';
 
 export default function LoginPage() {
     const supabase = createClient(); 
@@ -123,7 +124,7 @@ const styles = {
         borderRadius: '5px',
     }, 
     button: {
-        backgroundColor: '#f3e6f3',
+        backgroundColor: '#f2fbe7',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',

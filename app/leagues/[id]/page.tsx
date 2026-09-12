@@ -25,6 +25,7 @@ export default function ShowLeagues({ params }: PageProps) {
     const [name, setName] = useState(''); 
     const [season, setSeason] = useState(''); 
     const [members, setMembers] = useState<Member[]>([]); 
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
       async function getUser() {
         const supabase = createClient(); 
@@ -70,7 +71,10 @@ export default function ShowLeagues({ params }: PageProps) {
                     )
                 `)
                 .eq('league_id', id)
+            console.log("MEMBERS DATA:", data);
+            console.log("MEMBERS ERROR:", error);
             if (error) {
+                console.log("Member error:", error);
                 return; 
             }
             setMembers(data);
@@ -81,6 +85,7 @@ export default function ShowLeagues({ params }: PageProps) {
 
     return (
         <div style={styles.container}>
+            <button onClick={() => router.push('/dashboard')} style={styles.button}>←</button>
             <div style={styles.subContainer}>
                 <div style={styles.leagueContainer}>
                     <p style={styles.navbarText}>Name: {name}</p>

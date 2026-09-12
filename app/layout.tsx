@@ -1,4 +1,6 @@
-import type { Metadata } from "next";
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -6,19 +8,28 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Sports League Planner",
-  description: "Manage your sports league",
-};
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const [isLoading, setIsLoading] = useState(true);
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+  useEffect(() => {
+    if (document.readyState === 'complete') {
+      setIsLoading(false);
+    } else {
+      const handleLoad = () => {
+          setTimeout(() => {
+          setIsLoading(false);
+        }, 0);
+      };
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, []);
+
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body>
+        {isLoading ? <p>Loading App...</p> : children}
+      </body>
     </html>
   );
 }

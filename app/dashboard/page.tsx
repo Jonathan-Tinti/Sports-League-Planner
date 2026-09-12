@@ -19,6 +19,7 @@ export default function Dashboard() {
     const [leagueName, setLeagueName] = useState('');
     const [leagueSeason, setLeagueSeason] = useState('');
     const [showForm, setShowForm] = useState(false); 
+    const [isLoading, setIsLoading] = useState(true);
     const supabase = createClient();
     const router = useRouter();
 
@@ -178,10 +179,10 @@ const styles = {
     }, 
     leagueContainer: {
         display: 'flex',
-        flexDirection: 'row', 
+        flexDirection: 'row',  
     }, 
     subSubContainer: {
-        backgroundColor: '#FFFFF0', 
+        backgroundColor: '#f0f6fb', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -214,7 +215,7 @@ const styles = {
         borderRadius: '5px',
     },
     subButton: {
-        backgroundColor: '#eff5fb',
+        backgroundColor: '#f5faef',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '5px 10px',
