@@ -10,18 +10,25 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [name, setName] = useState(""); 
     const [password, setPassword] = useState(""); 
+    const [isSignUp, setSignUp] = useState(false); 
 
     async function signUp() {
         const { error } = await supabase.auth.signUp({
             email,
-            password
-        }); 
+            password,
+            options: {
+                data: {
+                    name: name
+                }
+            }
+        });
 
         if (error) {
-            console.log(error.message); 
-        } else {
-            alert('Check email for confirmation'); 
+            console.log(error.message);
+            return;
         }
+
+        alert('Check email for confirmation');
     }
 
     async function signIn() {
@@ -43,33 +50,56 @@ export default function LoginPage() {
             <h2 style={styles.title}>
                 Welcome to Sports League Planner!
             </h2>
+            {isSignUp && (
+                <input 
+                style={styles.input}
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
+            )}
             <input 
-            style={styles.input}
-            type="name"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+                style={styles.input}
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
             />
             <input 
-            style={styles.input}
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+                style={styles.input}
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
             />
-            <input 
-            style={styles.input}
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            />
-            <button onClick={signIn} style={styles.button}>
-                Login
-            </button>
-            <button onClick={signUp} style={styles.button}>
-                Not Registered? Sign Up!
-            </button>
+            {isSignUp ? (
+                <>
+                    <button onClick={signUp} style={styles.button}>
+                        Sign Up
+                    </button>
+
+                    <button
+                        onClick={() => setSignUp(false)}
+                        style={styles.button}
+                    >
+                        Already have an account? Login
+                    </button>
+                </>
+            ) : (
+                <>
+                    <button onClick={signIn} style={styles.button}>
+                        Login
+                    </button>
+
+                    <button
+                        onClick={() => setSignUp(true)}
+                        style={styles.button}
+                    >
+                        Not Registered? Sign Up!
+                    </button>
+                </>
+            )}
         </div>
     )
 }
