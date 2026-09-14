@@ -121,7 +121,9 @@ export default function ShowLeagues({ params }: PageProps) {
             console.log(error); 
             return; 
         }
-        setTeams([...teams, data]); 
+        setTeams(prevTeams => [...prevTeams, data]); 
+        setTeamName('');
+        setShowForm(false);
     }
 
     return (
@@ -146,15 +148,43 @@ export default function ShowLeagues({ params }: PageProps) {
                 </div>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Teams</h1>
+                    <button style={styles.button} onClick={() => setShowForm(true)}>Create Team</button>
                     <div style={styles.subSubContainer}>
                         {teams.map((team) => (
-                            <div key={team.id}>
+                            <div key={team.id} style={styles.subSubSubContainer}>
                                 <p>Name: {team.name}</p>
-                                <button>Visit</button> 
+                                <button style={styles.backButton}>Visit</button> 
                             </div>
                         ))}
                     </div>
                 </div>
+                {showForm && (
+                    <div style={styles.overlay}> 
+                        <form style={styles.form} onSubmit={(e) => {
+                                e.preventDefault();
+                                addTeam();
+                            }}>
+                                <h1 style={styles.title}>
+                                    Team Form
+                                </h1>
+                                <input
+                                    type="text"
+                                    placeholder="Team name"
+                                    style={styles.input}
+                                    value={teamName}
+                                    onChange={(e) => setTeamName(e.target.value)}
+                                />
+                                <div>
+                                    <button type="submit" style={styles.button}>
+                                        Create
+                                    </button>
+                                    <button type="button" onClick={() => setShowForm(false)} style={styles.button}>
+                                        Cancel
+                                    </button>
+                                </div>
+                        </form>
+                    </div>
+                )}
             </div>
         </div>
     )
@@ -189,10 +219,6 @@ const styles = {
         border: '1px solid',
         margin: '60px', 
     }, 
-    leagueContainer: {
-        display: 'flex',
-        flexDirection: 'row', 
-    }, 
     subSubContainer: {
         backgroundColor: '#FFFFF0', 
         display: 'flex', 
@@ -203,6 +229,13 @@ const styles = {
         border: '1px solid',
         marginBottom: '10px',
         padding: '5px'
+    }, 
+    subSubSubContainer: {
+        backgroundColor: '#FFFFF0', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
     }, 
     input: {
         backgroundColor: '#fdfefe', 
@@ -237,7 +270,8 @@ const styles = {
         borderColor: '#000000',
         padding: '5px 10px',
         cursor: 'pointer',
-        margin: '15px', 
+        marginRight: '15px', 
+        marginLeft: '15px', 
         top: '15px',
         right: '15px', 
         borderRadius: '5px',
@@ -265,4 +299,27 @@ const styles = {
         top: 0,
         margin: '10px'
     }, 
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+    },
+    form: {
+        backgroundColor: '#FFFFF0',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '400px',
+        padding: '30px',
+        borderRadius: '10px',
+        border: '1px solid',
+    },
 } satisfies Record<string, React.CSSProperties>
