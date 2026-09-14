@@ -15,7 +15,12 @@ type Member = {
     users: {
         name: string;
         email: string;
-    }[];
+    };
+}; 
+
+type Team = {
+    id: string;
+    name: string; 
 }; 
 
 export default function ShowLeagues({ params }: PageProps) {
@@ -25,7 +30,9 @@ export default function ShowLeagues({ params }: PageProps) {
     const [name, setName] = useState(''); 
     const [season, setSeason] = useState(''); 
     const [members, setMembers] = useState<Member[]>([]); 
-    const [isLoading, setIsLoading] = useState(true);
+    const [teams, setTeams] = useState<Team[]>([]); 
+    const [teamName, setTeamName] = useState(''); 
+    const [showForm, setShowForm] = useState(false); 
     useEffect(() => {
       async function getUser() {
         const supabase = createClient(); 
@@ -71,34 +78,82 @@ export default function ShowLeagues({ params }: PageProps) {
                     )
                 `)
                 .eq('league_id', id)
-            console.log("MEMBERS DATA:", data);
-            console.log("MEMBERS ERROR:", error);
             if (error) {
                 console.log("Member error:", error);
                 return; 
             }
             setMembers(data);
         }
+        async function getTeams () {
+            const { id } = await params; 
+            const supabase = createClient(); 
+            const { data, error } = await supabase
+                .from('teams')
+                .select(`
+                    id,
+                    name
+                    `)
+                .eq('league_id', id)
+            if (error) {
+                console.log("Team error:", error); 
+            }
+            setTeams(data); 
+        }
         getLeague(); 
         getMembers(); 
+        getTeams(); 
     }, [user]); 
 
+    async function addTeam() {
+        const {id} = await params; 
+        if (!user){
+            return; 
+        }
+        const { data, error } = await supabase
+            .from('teams')
+            .insert({
+                league_id: id,
+                name: teamName
+            })
+            .select()
+            .single()
+        if (error) {
+            console.log(error); 
+            return; 
+        }
+        setTeams([...teams, data]); 
+    }
+
     return (
-        <div style={styles.container}>
-            <button onClick={() => router.push('/dashboard')} style={styles.button}>←</button>
-            <div style={styles.subContainer}>
-                <div style={styles.leagueContainer}>
-                    <p style={styles.navbarText}>Name: {name}</p>
-                    <p style={styles.navbarText}>Season: {season}</p>
+        <div>
+            <div style={styles.navContainer}>
+                <button onClick={() => router.push('/dashboard')} style={styles.backButton}>←</button>
+                <p style={styles.navbarText}>Name: {name}</p>
+                <p style={styles.navbarText}>Season: {season}</p>
+            </div>
+            <div style={styles.container}>
+                <div style={styles.subContainer}>
+                    <h1 style={styles.title}>Members</h1>
+                    <div style={styles.subSubContainer}>
+                        {members.map((member) => (
+                            <div key={member.user_id}>
+                                <p>Name: {member.users?.name}</p>
+                                <p>Email: {member.users?.email}</p>
+                                <p>Role: {member.role}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div style={styles.subContainer}>
-                    {members.map((member) => (
-                        <div key={member.user_id}>
-                            <p>{member.users[0]?.name}</p>
-                            <p>{member.users[0]?.email}</p>
-                            <p>{member.role}</p>
-                        </div>
-                    ))}
+                    <h1 style={styles.title}>Teams</h1>
+                    <div style={styles.subSubContainer}>
+                        {teams.map((team) => (
+                            <div key={team.id}>
+                                <p>Name: {team.name}</p>
+                                <button>Visit</button> 
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,22 +164,30 @@ const styles = {
     container: {
         backgroundColor: '#eef0f0',
         display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flexDirection: 'row',
         height: '100vh',
         width: '100vw',
     },
+    navContainer: {
+        backgroundColor: '#3f414d', 
+        display: 'flex',
+        flexDirection: 'row', 
+        alignItems: 'center',
+        justifyContent: 'center', 
+        width: '100%',
+        height: '60px',
+        borderBottom: '1px solid', 
+    }, 
     subContainer: {
         backgroundColor: '#FFFFF0', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
         width: '40%',
         height: 'auto', 
         borderRadius: '10px',
-        border: '1px solid'
+        border: '1px solid',
+        margin: '60px', 
     }, 
     leagueContainer: {
         display: 'flex',
@@ -155,9 +218,8 @@ const styles = {
     }, 
     navbarText: {
         fontSize: '18px', 
-        margin: '5px', 
-        marginRight: '30px',
-        marginLeft: '30px'
+        margin: 'auto', 
+        color: 'white',
     }, 
     button: {
         backgroundColor: '#e1edf8',
@@ -169,6 +231,17 @@ const styles = {
         marginBottom: '15px',
         borderRadius: '5px',
     },
+    backButton: {
+        backgroundColor: '#e1edf8',
+        border: '1px solid', 
+        borderColor: '#000000',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        margin: '15px', 
+        top: '15px',
+        right: '15px', 
+        borderRadius: '5px',
+    }, 
     subButton: {
         backgroundColor: '#eff5fb',
         border: '1px solid', 

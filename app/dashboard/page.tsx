@@ -64,7 +64,6 @@ export default function Dashboard() {
     }, [user]);
 
     async function addLeague() {
-        console.log("addLeague was called")
         if (!user) {
             return; 
         }
@@ -81,7 +80,6 @@ export default function Dashboard() {
             console.log(error); 
             return; 
         }
-        console.log(data); 
         setLeagues([...leagues, data]); 
         const { data: member, error: memberError } = await supabase 
             .from('league_members')
@@ -93,8 +91,7 @@ export default function Dashboard() {
         if (memberError){
             console.log(memberError); 
             return; 
-        }
-        console.log(member); 
+        } 
     }
     
     return (
