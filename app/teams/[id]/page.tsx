@@ -9,99 +9,68 @@ type PageProps = {
   params: Promise<{ id: string }>;
 };
 
-type Member = {
-    user_id: string;
-    role: string;
-    users: {
-        name: string;
-        email: string;
-    };
+type Player = {
+    id: string; 
+    first_name: string; 
+    last_name: string; 
+    jersey: number; 
 }; 
 
-type Team = {
-    id: string;
-    name: string; 
-}; 
-
-export default function ShowLeagues({ params }: PageProps) {
+export default function ShowPlayers({params}: PageProps) {
     const supabase = createClient();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [name, setName] = useState(''); 
-    const [season, setSeason] = useState(''); 
-    const [members, setMembers] = useState<Member[]>([]); 
-    const [teams, setTeams] = useState<Team[]>([]); 
-    const [teamName, setTeamName] = useState(''); 
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [playerFName, setPlayerFName] = useState(''); 
+    const [playerLName, setPlayerLName] = useState(''); 
+    const [jersey, setJersey] = useState(0); 
     const [showForm, setShowForm] = useState(false); 
     useEffect(() => {
-      async function getUser() {
-        const supabase = createClient(); 
-        const {
-            data : {user},
-        } = await supabase.auth.getUser(); 
+        async function getUser() {
+            const supabase = createClient(); 
+            const {
+                data : {user},
+            } = await supabase.auth.getUser(); 
 
-        if (!user) {
-            router.push('/'); 
-        } else {
-            setUser(user); 
+            if (!user) {
+                router.push('/'); 
+            } else {
+                setUser(user); 
+            }
         }
-      }
-      getUser();
+        getUser();
     }, []); 
 
     useEffect(() => {
-        async function getLeague() {
-            const { id } = await params;
-            const supabase = createClient(); 
-            const { data, error } = await supabase
-                .from('leagues')
+        async function getTeam() {
+            const {id} = await params; 
+            const { data, error } = await supabase 
+                .from('teams')
                 .select('*')
                 .eq('id', id)
-                .single();
+                .single()
             if (error) {
+                console.log(error);
                 return; 
             }
             setName(data.name); 
-            setSeason(data.season); 
         }
-        async function getMembers(){
-            const { id } = await params;
-            const supabase = createClient(); 
+        async function getPlayers() {
+            const {id} = await params; 
             const { data, error } = await supabase
-                .from('league_members')
-                .select(`
-                    user_id,
-                    role,
-                    users (
-                        name,
-                        email
-                    )
-                `)
-                .eq('league_id', id)
+                .from('players')
+                .select('*')
+                .eq('team_id', id)
+
             if (error) {
-                console.log("Member error:", error);
+                console.log(error);
                 return; 
             }
-            setMembers(data);
+            setPlayers(data); 
         }
-        async function getTeams () {
-            const { id } = await params; 
-            const supabase = createClient(); 
-            const { data, error } = await supabase
-                .from('teams')
-                .select(`
-                    id,
-                    name
-                    `)
-                .eq('league_id', id)
-            if (error) {
-                console.log("Team error:", error); 
-            }
-            setTeams(data); 
-        }
-        getLeague(); 
-        getMembers(); 
-        getTeams(); 
+        getTeam(); 
+        getPlayers(); 
     }, [user]); 
 
     async function addTeam() {
@@ -109,11 +78,14 @@ export default function ShowLeagues({ params }: PageProps) {
         if (!user){
             return; 
         }
+
         const { data, error } = await supabase
-            .from('teams')
+            .from('players')
             .insert({
-                league_id: id,
-                name: teamName
+                team_id: id, 
+                first_name: playerFName,
+                last_name: playerLName,
+                jersey: jersey
             })
             .select()
             .single()
@@ -121,42 +93,30 @@ export default function ShowLeagues({ params }: PageProps) {
             console.log(error); 
             return; 
         }
-        setTeams(prevTeams => [...prevTeams, data]); 
-        setTeamName('');
-        setShowForm(false);
+        setPlayers(prevPlayers => [...prevPlayers, data]); 
+        setPlayerFName('');
+        setPlayerLName(''); 
+        setJersey(0); 
     }
 
     return (
         <div>
             <div style={styles.navContainer}>
-                <button onClick={() => router.push('/dashboard')} style={styles.backButton}>←</button>
+                <button onClick={() => router.push(`/dashboard`)} style={styles.backButton}>←</button>
                 <p style={styles.navbarText}>Name: {name}</p>
-                <p style={styles.navbarText}>Season: {season}</p>
             </div>
             <div style={styles.container}>
                 <div style={styles.subContainer}>
-                    <h1 style={styles.title}>Members</h1>
+                    <h1 style={styles.title}>Players</h1>
                     <div style={styles.subSubContainer}>
-                        {members.map((member) => (
-                            <div key={member.user_id}>
-                                <p>Name: {member.users?.name}</p>
-                                <p>Email: {member.users?.email}</p>
-                                <p>Role: {member.role}</p>
+                        {players.map((player) => (
+                            <div key={player.id}>
+                                <p>Name: {player.first_name} {player.last_name}</p>
+                                <p>Jersey: {player.jersey}</p>
                             </div>
                         ))}
                     </div>
-                </div>
-                <div style={styles.subContainer}>
-                    <h1 style={styles.title}>Teams</h1>
-                    <button style={styles.button} onClick={() => setShowForm(true)}>Create Team</button>
-                    <div style={styles.subSubContainer}>
-                        {teams.map((team) => (
-                            <div key={team.id} style={styles.subSubSubContainer}>
-                                <p>Name: {team.name}</p>
-                                <button style={styles.backButton} onClick={() => router.push(`/teams/${team.id}`)}>Visit</button> 
-                            </div>
-                        ))}
-                    </div>
+                    <button style={styles.button} onClick={() => setShowForm(true)}>Add Player</button>
                 </div>
                 {showForm && (
                     <div style={styles.overlay}> 
@@ -165,14 +125,28 @@ export default function ShowLeagues({ params }: PageProps) {
                                 addTeam();
                             }}>
                                 <h1 style={styles.title}>
-                                    Team Form
+                                    Player Form
                                 </h1>
                                 <input
                                     type="text"
-                                    placeholder="Team name"
+                                    placeholder="First name"
                                     style={styles.input}
-                                    value={teamName}
-                                    onChange={(e) => setTeamName(e.target.value)}
+                                    value={playerFName}
+                                    onChange={(e) => setPlayerFName(e.target.value)}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Last name"
+                                    style={styles.input}
+                                    value={playerLName}
+                                    onChange={(e) => setPlayerLName(e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Jesery number"
+                                    style={styles.input}
+                                    value={jersey}
+                                    onChange={(e) => setJersey(e.target.valueAsNumber)}
                                 />
                                 <div>
                                     <button type="submit" style={styles.button}>
@@ -194,10 +168,23 @@ const styles = {
     container: {
         backgroundColor: '#eef0f0',
         display: 'flex', 
-        flexDirection: 'row',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         height: '100vh',
         width: '100vw',
     },
+    subContainer: {
+        backgroundColor: '#FFFFF0', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40%',
+        height: 'auto', 
+        borderRadius: '10px',
+        border: '1px solid'
+    }, 
     navContainer: {
         backgroundColor: '#3f414d', 
         display: 'flex',
@@ -208,19 +195,8 @@ const styles = {
         height: '60px',
         borderBottom: '1px solid', 
     }, 
-    subContainer: {
-        backgroundColor: '#FFFFF0', 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '40%',
-        height: 'auto', 
-        borderRadius: '10px',
-        border: '1px solid',
-        margin: '60px', 
-    }, 
     subSubContainer: {
-        backgroundColor: '#FFFFF0', 
+        backgroundColor: '#f0f6fb', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -229,13 +205,6 @@ const styles = {
         border: '1px solid',
         marginBottom: '10px',
         padding: '5px'
-    }, 
-    subSubSubContainer: {
-        backgroundColor: '#FFFFF0', 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
     }, 
     input: {
         backgroundColor: '#fdfefe', 
@@ -264,6 +233,16 @@ const styles = {
         marginBottom: '15px',
         borderRadius: '5px',
     },
+    subButton: {
+        backgroundColor: '#f5faef',
+        border: '1px solid', 
+        borderColor: '#000000',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        margin: '3px', 
+        marginBottom: '5px',
+        borderRadius: '5px',
+    }, 
     backButton: {
         backgroundColor: '#e1edf8',
         border: '1px solid', 
@@ -274,16 +253,6 @@ const styles = {
         marginLeft: '15px', 
         top: '15px',
         right: '15px', 
-        borderRadius: '5px',
-    }, 
-    subButton: {
-        backgroundColor: '#eff5fb',
-        border: '1px solid', 
-        borderColor: '#000000',
-        padding: '5px 10px',
-        cursor: 'pointer',
-        margin: '3px', 
-        marginBottom: '5px',
         borderRadius: '5px',
     }, 
     title: {

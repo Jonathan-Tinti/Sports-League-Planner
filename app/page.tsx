@@ -41,7 +41,6 @@ export default function LoginPage() {
         if (error) {
             console.log(error.message); 
         } else {
-            alert('Signed In!'); 
             router.push('/dashboard'); 
         }
     }
