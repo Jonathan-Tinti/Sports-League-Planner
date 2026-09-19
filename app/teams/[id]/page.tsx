@@ -26,13 +26,55 @@ export default function ShowPlayers({params}: PageProps) {
     const [playerLName, setPlayerLName] = useState(''); 
     const [jersey, setJersey] = useState(0); 
     const [showForm, setShowForm] = useState(false); 
+    const [leagueID, setLeagueID] = useState(''); 
+    const [loading, setLoading] =  useState(true); 
+
+    async function loadPage() {
+        setLoading(true); 
+        try {
+            await getTeam(); 
+            await getPlayers(); 
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false); 
+        }
+    }
+
+    async function getTeam() {
+        const {id} = await params; 
+        const { data, error } = await supabase 
+            .from('teams')
+            .select('*')
+            .eq('id', id)
+            .single()
+        if (error) {
+            console.log(error);
+            return; 
+        }
+        setName(data.name); 
+        setLeagueID(data.league_id);
+    }
+    async function getPlayers() {
+        const {id} = await params; 
+        const { data, error } = await supabase
+            .from('players')
+            .select('*')
+            .eq('team_id', id)
+
+        if (error) {
+            console.log(error);
+            return; 
+        }
+        setPlayers(data); 
+    }
     useEffect(() => {
         async function getUser() {
             const supabase = createClient(); 
             const {
                 data : {user},
             } = await supabase.auth.getUser(); 
-
+            await loadPage(); 
             if (!user) {
                 router.push('/'); 
             } else {
@@ -41,37 +83,6 @@ export default function ShowPlayers({params}: PageProps) {
         }
         getUser();
     }, []); 
-
-    useEffect(() => {
-        async function getTeam() {
-            const {id} = await params; 
-            const { data, error } = await supabase 
-                .from('teams')
-                .select('*')
-                .eq('id', id)
-                .single()
-            if (error) {
-                console.log(error);
-                return; 
-            }
-            setName(data.name); 
-        }
-        async function getPlayers() {
-            const {id} = await params; 
-            const { data, error } = await supabase
-                .from('players')
-                .select('*')
-                .eq('team_id', id)
-
-            if (error) {
-                console.log(error);
-                return; 
-            }
-            setPlayers(data); 
-        }
-        getTeam(); 
-        getPlayers(); 
-    }, [user]); 
 
     async function addTeam() {
         const {id} = await params; 
@@ -99,10 +110,52 @@ export default function ShowPlayers({params}: PageProps) {
         setJersey(0); 
     }
 
+    if (loading) {
+        return (
+            <div style={styles.loadingScreen}>
+                <style>
+                    {`
+                        @keyframes spin {
+                            from {
+                                transform: rotate(0deg);
+                            }
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
+
+                        @keyframes loading {
+                            0% {
+                                transform: translateX(-250%);
+                            }
+                            100% {
+                                transform: translateX(650%);
+                            }
+                        }
+                    `}
+                </style>
+
+                <div style={styles.loadingBall}>⚽</div>
+
+                <h1 style={styles.loadingTitle}>
+                    Soccer League
+                </h1>
+
+                <p style={styles.loadingText}>
+                    Preparing the pitch...
+                </p>
+
+                <div style={styles.loadingBar}>
+                    <div style={styles.loadingProgress}></div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div>
             <div style={styles.navContainer}>
-                <button onClick={() => router.push(`/dashboard`)} style={styles.backButton}>←</button>
+                <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.backButton}>←</button>
                 <p style={styles.navbarText}>Name: {name}</p>
             </div>
             <div style={styles.container}>
@@ -291,5 +344,46 @@ const styles = {
         padding: '30px',
         borderRadius: '10px',
         border: '1px solid',
+    },
+    loadingScreen: {
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFF0',
+    },
+
+    loadingBall: {
+        fontSize: '70px',
+        animation: 'spin 2s linear infinite',
+    },
+
+    loadingTitle: {
+        fontSize: '32px',
+        marginTop: '20px',
+        marginBottom: '10px',
+    },
+
+    loadingText: {
+        fontSize: '18px',
+        color: '#555',
+    },
+
+    loadingBar: {
+        width: '250px',
+        height: '8px',
+        backgroundColor: '#ddd',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        marginTop: '20px',
+    },
+
+    loadingProgress: {
+        width: '40%',
+        height: '100%',
+        backgroundColor: '#4CAF50',
+        borderRadius: '10px',
+        animation: 'loading 1.5s ease-in-out infinite',
     },
 } satisfies Record<string, React.CSSProperties>

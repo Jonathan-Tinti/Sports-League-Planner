@@ -23,6 +23,17 @@ type Team = {
     name: string; 
 }; 
 
+type Game = {
+    home_team: {
+        name: string; 
+    }
+    away_team: {
+        name: string; 
+    }
+    game_date: Date; 
+    location: string; 
+}; 
+
 export default function ShowLeagues({ params }: PageProps) {
     const supabase = createClient();
     const router = useRouter();
@@ -33,13 +44,87 @@ export default function ShowLeagues({ params }: PageProps) {
     const [teams, setTeams] = useState<Team[]>([]); 
     const [teamName, setTeamName] = useState(''); 
     const [showForm, setShowForm] = useState(false); 
+    const [loading, setLoading] =  useState(true); 
+
+    async function loadPage() {
+        setLoading(true); 
+        try {
+            await getLeague(); 
+            await getMembers(); 
+            await getTeams(); 
+            await getGames(); 
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false); 
+        }
+    }
+
+    async function getLeague() {
+        const { id } = await params;
+        const supabase = createClient(); 
+        const { data, error } = await supabase
+            .from('leagues')
+            .select('*')
+            .eq('id', id)
+            .single();
+        if (error) {
+            return; 
+        }
+        setName(data.name); 
+        setSeason(data.season); 
+    }
+    async function getMembers(){
+        const { id } = await params;
+        const supabase = createClient(); 
+        const { data, error } = await supabase
+            .from('league_members')
+            .select(`
+                user_id,
+                role,
+                users (
+                    name,
+                    email
+                )
+            `)
+            .eq('league_id', id)
+        if (error) {
+            console.log("Member error:", error);
+            return; 
+        }
+        setMembers(data);
+    }
+    async function getTeams () {
+        const { id } = await params; 
+        const supabase = createClient(); 
+        const { data, error } = await supabase
+            .from('teams')
+            .select(`
+                id,
+                name
+                `)
+            .eq('league_id', id)
+        if (error) {
+            console.log("Team error:", error); 
+        }
+        setTeams(data); 
+    }
+    async function getGames () {
+        const { id } = await params;
+        const supabase = createClient(); 
+        const { data, error } = await supabase 
+            .from('games')
+            .select(`
+                
+                `)
+    }
     useEffect(() => {
       async function getUser() {
         const supabase = createClient(); 
         const {
             data : {user},
         } = await supabase.auth.getUser(); 
-
+        await loadPage(); 
         if (!user) {
             router.push('/'); 
         } else {
@@ -48,61 +133,6 @@ export default function ShowLeagues({ params }: PageProps) {
       }
       getUser();
     }, []); 
-
-    useEffect(() => {
-        async function getLeague() {
-            const { id } = await params;
-            const supabase = createClient(); 
-            const { data, error } = await supabase
-                .from('leagues')
-                .select('*')
-                .eq('id', id)
-                .single();
-            if (error) {
-                return; 
-            }
-            setName(data.name); 
-            setSeason(data.season); 
-        }
-        async function getMembers(){
-            const { id } = await params;
-            const supabase = createClient(); 
-            const { data, error } = await supabase
-                .from('league_members')
-                .select(`
-                    user_id,
-                    role,
-                    users (
-                        name,
-                        email
-                    )
-                `)
-                .eq('league_id', id)
-            if (error) {
-                console.log("Member error:", error);
-                return; 
-            }
-            setMembers(data);
-        }
-        async function getTeams () {
-            const { id } = await params; 
-            const supabase = createClient(); 
-            const { data, error } = await supabase
-                .from('teams')
-                .select(`
-                    id,
-                    name
-                    `)
-                .eq('league_id', id)
-            if (error) {
-                console.log("Team error:", error); 
-            }
-            setTeams(data); 
-        }
-        getLeague(); 
-        getMembers(); 
-        getTeams(); 
-    }, [user]); 
 
     async function addTeam() {
         const {id} = await params; 
@@ -124,6 +154,48 @@ export default function ShowLeagues({ params }: PageProps) {
         setTeams(prevTeams => [...prevTeams, data]); 
         setTeamName('');
         setShowForm(false);
+    }
+
+    if (loading) {
+        return (
+            <div style={styles.loadingScreen}>
+                <style>
+                    {`
+                        @keyframes spin {
+                            from {
+                                transform: rotate(0deg);
+                            }
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
+
+                        @keyframes loading {
+                            0% {
+                                transform: translateX(-250%);
+                            }
+                            100% {
+                                transform: translateX(650%);
+                            }
+                        }
+                    `}
+                </style>
+
+                <div style={styles.loadingBall}>⚽</div>
+
+                <h1 style={styles.loadingTitle}>
+                    Soccer League
+                </h1>
+
+                <p style={styles.loadingText}>
+                    Preparing the pitch...
+                </p>
+
+                <div style={styles.loadingBar}>
+                    <div style={styles.loadingProgress}></div>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -322,5 +394,46 @@ const styles = {
         padding: '30px',
         borderRadius: '10px',
         border: '1px solid',
+    },
+    loadingScreen: {
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFF0',
+    },
+
+    loadingBall: {
+        fontSize: '70px',
+        animation: 'spin 2s linear infinite',
+    },
+
+    loadingTitle: {
+        fontSize: '32px',
+        marginTop: '20px',
+        marginBottom: '10px',
+    },
+
+    loadingText: {
+        fontSize: '18px',
+        color: '#555',
+    },
+
+    loadingBar: {
+        width: '250px',
+        height: '8px',
+        backgroundColor: '#ddd',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        marginTop: '20px',
+    },
+
+    loadingProgress: {
+        width: '40%',
+        height: '100%',
+        backgroundColor: '#4CAF50',
+        borderRadius: '10px',
+        animation: 'loading 1.5s ease-in-out infinite',
     },
 } satisfies Record<string, React.CSSProperties>

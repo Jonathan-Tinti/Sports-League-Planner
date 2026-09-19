@@ -19,9 +19,35 @@ export default function Dashboard() {
     const [leagueName, setLeagueName] = useState('');
     const [leagueSeason, setLeagueSeason] = useState('');
     const [showForm, setShowForm] = useState(false); 
-    const [isLoading, setIsLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const supabase = createClient();
     const router = useRouter();
+
+    async function loadPage(userId: string) {
+        setLoading(true); 
+        try {
+            await getLeagues(userId); 
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false); 
+        }
+    }
+
+    async function getLeagues(userId: string) {
+        const { data, error } = await supabase
+            .from('leagues')
+            .select('*')
+            .eq('owner_id', userId);
+
+        if (error) {
+            console.log("Error getting leagues:", error);
+            return;
+        }
+
+        console.log("Leagues:", data);
+        setLeagues(data);
+    }
 
     useEffect(() => {
         async function getUser() {
@@ -33,35 +59,13 @@ export default function Dashboard() {
             if (user) {
                 setEmail(user.email ?? '');
                 setUser(user); 
+                await loadPage(user.id); 
             } else {
                 router.push('/'); 
             }
         }
         getUser(); 
     }, []); 
-
-    useEffect(() => {
-        async function getLeagues() {
-            if (!user) {
-                return;
-            }
-
-            const { data, error } = await supabase
-                .from('leagues')
-                .select('*')
-                .eq('owner_id', user.id);
-
-            if (error) {
-                console.log("Error getting leagues:", error);
-                return;
-            }
-
-            console.log("Leagues:", data);
-            setLeagues(data);
-        }
-
-        getLeagues();
-    }, [user]);
 
     async function addLeague() {
         if (!user) {
@@ -92,6 +96,51 @@ export default function Dashboard() {
             console.log(memberError); 
             return; 
         } 
+        setLeagueName(''); 
+        setLeagueSeason('');
+        setShowForm(false); 
+    }
+
+    if (loading) {
+        return (
+            <div style={styles.loadingScreen}>
+                <style>
+                    {`
+                        @keyframes spin {
+                            from {
+                                transform: rotate(0deg);
+                            }
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
+
+                        @keyframes loading {
+                            0% {
+                                transform: translateX(-250%);
+                            }
+                            100% {
+                                transform: translateX(650%);
+                            }
+                        }
+                    `}
+                </style>
+
+                <div style={styles.loadingBall}>⚽</div>
+
+                <h1 style={styles.loadingTitle}>
+                    Soccer League
+                </h1>
+
+                <p style={styles.loadingText}>
+                    Preparing the pitch...
+                </p>
+
+                <div style={styles.loadingBar}>
+                    <div style={styles.loadingProgress}></div>
+                </div>
+            </div>
+        );
     }
     
     return (
@@ -117,11 +166,11 @@ export default function Dashboard() {
                 </button>
             </div>
             {showForm && (
-                <form style={styles.container} onSubmit={(e) => {
-                    e.preventDefault();
-                    addLeague();
-                }}>
-                    <div style={styles.subContainer}>
+                <div style={styles.overlay}> 
+                    <form style={styles.form} onSubmit={(e) => {
+                        e.preventDefault();
+                        addLeague();
+                    }}>
                         <h1 style={styles.title}>
                             League Form
                         </h1>
@@ -145,8 +194,8 @@ export default function Dashboard() {
                                 Cancel
                             </button>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             )}
         </div>
     )
@@ -234,4 +283,68 @@ const styles = {
         top: 0,
         margin: '10px'
     }, 
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+    },
+    form: {
+        backgroundColor: '#FFFFF0',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '400px',
+        padding: '30px',
+        borderRadius: '10px',
+        border: '1px solid',
+    },
+    loadingScreen: {
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFFFF0',
+    },
+
+    loadingBall: {
+        fontSize: '70px',
+        animation: 'spin 2s linear infinite',
+    },
+
+    loadingTitle: {
+        fontSize: '32px',
+        marginTop: '20px',
+        marginBottom: '10px',
+    },
+
+    loadingText: {
+        fontSize: '18px',
+        color: '#555',
+    },
+
+    loadingBar: {
+        width: '250px',
+        height: '8px',
+        backgroundColor: '#ddd',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        marginTop: '20px',
+    },
+
+    loadingProgress: {
+        width: '40%',
+        height: '100%',
+        backgroundColor: '#4CAF50',
+        borderRadius: '10px',
+        animation: 'loading 1.5s ease-in-out infinite',
+    },
 } satisfies Record<string, React.CSSProperties>
