@@ -4,6 +4,10 @@ import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import AddTeamForm from '@/components/AddTeamForm';
+import AddGameForm from '@/components/AddGameForm';
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -44,8 +48,8 @@ export default function ShowLeagues({ params }: PageProps) {
     const [members, setMembers] = useState<Member[]>([]); 
     const [teams, setTeams] = useState<Team[]>([]); 
     const [games, setGames] = useState<Game[]>([]); 
-    const [teamName, setTeamName] = useState(''); 
     const [showForm, setShowForm] = useState(false); 
+    const [showGForm, setGShowForm] = useState(false); 
     const [loading, setLoading] =  useState(true); 
 
     async function loadPage() {
@@ -144,7 +148,7 @@ export default function ShowLeagues({ params }: PageProps) {
       getUser();
     }, []); 
 
-    async function addTeam() {
+    async function addTeam(teamName: string) {
         const {id} = await params; 
         if (!user){
             return; 
@@ -162,8 +166,33 @@ export default function ShowLeagues({ params }: PageProps) {
             return; 
         }
         setTeams(prevTeams => [...prevTeams, data]); 
-        setTeamName('');
         setShowForm(false);
+    }
+
+    async function addGame(homeId: string,
+    awayId: string,
+    date: Date,
+    location: string) {
+        const {id} = await params; 
+        if (!user){
+            return; 
+        }
+        const { data, error } = await supabase
+            .from('games')
+            .insert({
+                home_id: homeId,
+                away_id: awayId,
+                game_date: date,
+                location: location, 
+            })
+            .select()
+            .single()
+        if (error) {
+            console.log(error); 
+            return; 
+        }
+        setGames(prevTeams => [...prevTeams, data]); 
+        setGShowForm(false);
     }
 
     if (loading) {
@@ -242,6 +271,9 @@ export default function ShowLeagues({ params }: PageProps) {
                 </div>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Games</h1>
+                    <button onClick={() => setGShowForm(true)}>
+                        Create Game
+                    </button>
                     <div style={styles.subSubContainer}>
                         {games.map((game) => (
                             <div key={game.id}>
@@ -253,31 +285,17 @@ export default function ShowLeagues({ params }: PageProps) {
                     </div>
                 </div>
                 {showForm && (
-                    <div style={styles.overlay}> 
-                        <form style={styles.form} onSubmit={(e) => {
-                                e.preventDefault();
-                                addTeam();
-                            }}>
-                                <h1 style={styles.title}>
-                                    Team Form
-                                </h1>
-                                <input
-                                    type="text"
-                                    placeholder="Team name"
-                                    style={styles.input}
-                                    value={teamName}
-                                    onChange={(e) => setTeamName(e.target.value)}
-                                />
-                                <div>
-                                    <button type="submit" style={styles.button}>
-                                        Create
-                                    </button>
-                                    <button type="button" onClick={() => setShowForm(false)} style={styles.button}>
-                                        Cancel
-                                    </button>
-                                </div>
-                        </form>
-                    </div>
+                    <AddTeamForm
+                        onAddTeam={addTeam}
+                        onCancel={() => setShowForm(false)}
+                    />
+                )}
+                {showGForm && (
+                    <AddGameForm
+                        teams={teams}
+                        onAddGame={addGame}
+                        onCancel={() => setGShowForm(false)}
+                    />
                 )}
             </div>
         </div>
