@@ -271,11 +271,11 @@ export default function ShowLeagues({ params }: PageProps) {
                 </div>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Games</h1>
-                    <button onClick={() => setGShowForm(true)}>
+                    <button onClick={() => setGShowForm(true)} style={styles.button}>
                         Create Game
                     </button>
                     <div style={styles.subSubContainer}>
-                        {games.map((game) => (
+                        {(games ?? []).map((game) => (
                             <div key={game.id}>
                                 <p>Game: {game.home_team?.name} vs {game.away_team?.name}</p>
                                 <p>Date: {game?.game_date.toLocaleDateString()}</p>
