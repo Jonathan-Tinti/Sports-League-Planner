@@ -24,12 +24,13 @@ type Team = {
 }; 
 
 type Game = {
+    id: string; 
     home_team: {
         name: string; 
-    }
+    };
     away_team: {
         name: string; 
-    }
+    }; 
     game_date: Date; 
     location: string; 
 }; 
@@ -42,6 +43,7 @@ export default function ShowLeagues({ params }: PageProps) {
     const [season, setSeason] = useState(''); 
     const [members, setMembers] = useState<Member[]>([]); 
     const [teams, setTeams] = useState<Team[]>([]); 
+    const [games, setGames] = useState<Game[]>([]); 
     const [teamName, setTeamName] = useState(''); 
     const [showForm, setShowForm] = useState(false); 
     const [loading, setLoading] =  useState(true); 
@@ -112,11 +114,19 @@ export default function ShowLeagues({ params }: PageProps) {
     async function getGames () {
         const { id } = await params;
         const supabase = createClient(); 
+        const today = new Date().toISOString().split('T')[0];
         const { data, error } = await supabase 
             .from('games')
             .select(`
-                
+                home_team(name),
+                away_team (name),
+                game_date, 
+                location,
                 `)
+            .eq('league_id', id)
+            .gte('game_date', today)
+            .order('game_date', { ascending: false });
+        setGames(data); 
     }
     useEffect(() => {
       async function getUser() {
@@ -226,6 +236,18 @@ export default function ShowLeagues({ params }: PageProps) {
                             <div key={team.id} style={styles.subSubSubContainer}>
                                 <p>Name: {team.name}</p>
                                 <button style={styles.backButton} onClick={() => router.push(`/teams/${team.id}`)}>Visit</button> 
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div style={styles.subContainer}>
+                    <h1 style={styles.title}>Games</h1>
+                    <div style={styles.subSubContainer}>
+                        {games.map((game) => (
+                            <div key={game.id}>
+                                <p>Game: {game.home_team?.name} vs {game.away_team?.name}</p>
+                                <p>Date: {game?.game_date.toLocaleDateString()}</p>
+                                <p>Address: {game?.location}</p>
                             </div>
                         ))}
                     </div>
