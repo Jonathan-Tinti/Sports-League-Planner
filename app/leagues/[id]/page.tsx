@@ -52,6 +52,8 @@ export default function ShowLeagues({ params }: PageProps) {
     const [teams, setTeams] = useState<Team[]>([]); 
     const [games, setGames] = useState<Game[]>([]); 
     const [isOwner, setIsOwner] = useState(false); 
+    const [home_id, setHomeID] = useState('');
+    const [away_id, setAwayID] = useState('');
     const [showForm, setShowForm] = useState(false); 
     const [showGForm, setGShowForm] = useState(false); 
     const [loading, setLoading] =  useState(true); 
@@ -190,7 +192,6 @@ export default function ShowLeagues({ params }: PageProps) {
     awayId: string,
     date: Date,
     location: string) {
-        const {id} = await params; 
         if (!user){
             return; 
         }
