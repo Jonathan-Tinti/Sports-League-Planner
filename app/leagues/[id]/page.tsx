@@ -32,11 +32,14 @@ type Game = {
     home_team: {
         name: string; 
     };
+    home_score: number;
     away_team: {
         name: string; 
     }; 
+    away_score: number; 
     game_date: Date; 
     location: string; 
+
 }; 
 
 export default function ShowLeagues({ params }: PageProps) {
@@ -48,6 +51,7 @@ export default function ShowLeagues({ params }: PageProps) {
     const [members, setMembers] = useState<Member[]>([]); 
     const [teams, setTeams] = useState<Team[]>([]); 
     const [games, setGames] = useState<Game[]>([]); 
+    const [isOwner, setIsOwner] = useState(false); 
     const [showForm, setShowForm] = useState(false); 
     const [showGForm, setGShowForm] = useState(false); 
     const [loading, setLoading] =  useState(true); 
@@ -143,6 +147,19 @@ export default function ShowLeagues({ params }: PageProps) {
             router.push('/'); 
         } else {
             setUser(user); 
+            const { data, error } = await supabase 
+                .from('league_members')
+                .select('role')
+                .eq('user_id', user.id)
+                .select()
+                .single()
+            if (error) {
+                console.log(error);
+                return; 
+            }
+            if (data.role == 'owner') {
+                setIsOwner(true)
+            }
         }
       }
       getUser();
@@ -259,7 +276,11 @@ export default function ShowLeagues({ params }: PageProps) {
                 </div>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Teams</h1>
-                    <button style={styles.button} onClick={() => setShowForm(true)}>Create Team</button>
+                    {isOwner && ( 
+                        <button style={styles.button} onClick={() => setShowForm(true)}>
+                            Create Team
+                            </button> 
+                    )}
                     <div style={styles.subSubContainer}>
                         {teams.map((team) => (
                             <div key={team.id} style={styles.subSubSubContainer}>
@@ -271,9 +292,11 @@ export default function ShowLeagues({ params }: PageProps) {
                 </div>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Games</h1>
-                    <button onClick={() => setGShowForm(true)} style={styles.button}>
-                        Create Game
-                    </button>
+                    {isOwner && (
+                        <button style={styles.button} onClick={() => setGShowForm(true)}>
+                            Create Game
+                        </button>
+                    )}
                     <div style={styles.subSubContainer}>
                         {(games ?? []).map((game) => (
                             <div key={game.id}>
