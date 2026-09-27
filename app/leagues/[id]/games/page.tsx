@@ -25,17 +25,21 @@ type Game = {
 
 }; 
 
+type Team = {
+    id: string;
+    name: string; 
+}; 
+
 export default function ShowGames({ params }: PageProps){
     const supabase = createClient();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [games, setGames] = useState<Game[]>([]); 
     const [isOwner, setIsOwner] = useState(false); 
-    const [home_id, setHomeID] = useState('');
-    const [away_id, setAwayID] = useState('');
-    const [showForm, setShowForm] = useState(false); 
     const [showGForm, setGShowForm] = useState(false); 
     const [loading, setLoading] =  useState(true); 
+    const [leagueID, setLeagueID] = useState('');
+    const [teams, setTeams] = useState<Team[]>([]); 
 
     async function loadPage() {
         setLoading(true); 
@@ -50,24 +54,7 @@ export default function ShowGames({ params }: PageProps){
 
     async function getGames () {
         const { id } = await params;
-        const supabase = createClient(); 
-        const today = new Date().toISOString().split('T')[0];
-        const { data, error } = await supabase 
-            .from('games')
-            .select(`
-                home_team(name),
-                away_team (name),
-                game_date, 
-                location,
-                `)
-            .eq('league_id', id)
-            .gte('game_date', today)
-            .order('game_date', { ascending: false });
-        setGames(data); 
-    }
-
-    async function getGames () {
-        const { id } = await params;
+        setLeagueID(id); 
         const supabase = createClient(); 
         const today = new Date().toISOString().split('T')[0];
         const { data, error } = await supabase 
@@ -183,6 +170,7 @@ export default function ShowGames({ params }: PageProps){
     return (
         <div>
             <div style={styles.container}>
+                <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Games</h1>
                     {isOwner && (

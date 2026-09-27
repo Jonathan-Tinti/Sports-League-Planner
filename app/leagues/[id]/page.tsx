@@ -108,9 +108,9 @@ export default function ShowLeagues({ params }: PageProps) {
         <div>
             <div style={styles.navContainer}>
                 <button onClick={() => router.push('/dashboard')} style={styles.navButton}>←</button>
-                <button onClick={() => router.push(`leagues/${leagueID}/members`)} style={styles.navButton}>Contact</button>
-                <button onClick={() => router.push(`leagues/${leagueID}/teams`)} style={styles.navButton}>Teams</button>
-                <button onClick={() => router.push(`leagues/${leagueID}/games`)} style={styles.navButton}>Games</button>
+                <button onClick={() => router.push(`/leagues/${leagueID}/members`)} style={styles.navButton}>Contact</button>
+                <button onClick={() => router.push(`/leagues/${leagueID}/teams`)} style={styles.navButton}>Teams</button>
+                <button onClick={() => router.push(`/leagues/${leagueID}/games`)} style={styles.navButton}>Games</button>
             </div>
             <div style={styles.container}>
                 <p >Name: {name}</p>

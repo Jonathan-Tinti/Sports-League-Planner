@@ -26,6 +26,7 @@ export default function ShowMembers({ params }: PageProps) {
     const [isOwner, setIsOwner] = useState(false); 
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] =  useState(true); 
+    const [leagueID, setLeagueID] = useState('');
 
     async function loadPage() {
         setLoading(true); 
@@ -40,6 +41,7 @@ export default function ShowMembers({ params }: PageProps) {
 
     async function getMembers(){
         const { id } = await params;
+        setLeagueID(id); 
         const supabase = createClient(); 
         const { data, error } = await supabase
             .from('league_members')
@@ -132,9 +134,7 @@ export default function ShowMembers({ params }: PageProps) {
     return (
         <div>
             <div style={styles.container}>
-                <h2>Members</h2>
-            </div>
-            <div style={styles.container}>
+                <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Members</h1>
                     <div style={styles.subSubContainer}>
@@ -147,9 +147,9 @@ export default function ShowMembers({ params }: PageProps) {
                         ))}
                     </div>
                 </div>
-                {showForm && (
+                {/* {showForm && (
                     
-                )}
+                )} */}
             </div>
         </div>
     )

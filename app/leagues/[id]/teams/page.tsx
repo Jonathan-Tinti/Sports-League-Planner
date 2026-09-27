@@ -23,6 +23,7 @@ export default function ShowTeams({ params }: PageProps){
     const [isOwner, setIsOwner] = useState(false); 
     const [showForm, setShowForm] = useState(false); 
     const [loading, setLoading] =  useState(true); 
+    const [leagueID, setLeagueID] = useState('');
 
     async function loadPage() {
         setLoading(true); 
@@ -37,6 +38,7 @@ export default function ShowTeams({ params }: PageProps){
 
     async function getTeams () {
         const { id } = await params; 
+        setLeagueID(id); 
         const supabase = createClient(); 
         const { data, error } = await supabase
             .from('teams')
@@ -146,6 +148,7 @@ export default function ShowTeams({ params }: PageProps){
     return (
         <div>
             <div style={styles.container}>
+                <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Teams</h1>
                     {isOwner && ( 
