@@ -6,6 +6,10 @@ import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import AddGameForm from '@/components/AddGameForm';
 
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
 type Game = {
     id: string; 
     home_team: {
@@ -21,7 +25,7 @@ type Game = {
 
 }; 
 
-export default function ShowGames(){
+export default function ShowGames({ params }: PageProps){
     const supabase = createClient();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);

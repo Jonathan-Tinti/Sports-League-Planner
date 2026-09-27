@@ -6,12 +6,16 @@ import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import AddTeamForm from '@/components/AddTeamForm';
 
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
 type Team = {
     id: string;
     name: string; 
 }; 
 
-export default function ShowTeams(){
+export default function ShowTeams({ params }: PageProps){
     const supabase = createClient();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
@@ -153,7 +157,7 @@ export default function ShowTeams(){
                         {teams.map((team) => (
                             <div key={team.id} style={styles.subSubSubContainer}>
                                 <p>Name: {team.name}</p>
-                                <button style={styles.navButton} onClick={() => router.push(`/teams/${team.id}`)}>Visit</button> 
+                                <button style={styles.navButton} onClick={() => router.push(`/team/${team.id}`)}>Visit</button> 
                             </div>
                         ))}
                     </div>

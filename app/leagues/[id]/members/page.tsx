@@ -5,6 +5,10 @@ import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
 type Member = {
     user_id: string;
     role: string;
@@ -14,7 +18,7 @@ type Member = {
     };
 }; 
 
-export default function ShowMembers() {
+export default function ShowMembers({ params }: PageProps) {
     const supabase = createClient();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
