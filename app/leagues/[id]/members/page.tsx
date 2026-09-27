@@ -4,14 +4,6 @@ import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import AddTeamForm from '@/components/AddTeamForm';
-import AddGameForm from '@/components/AddGameForm';
-
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
 
 type Member = {
     user_id: string;
@@ -22,48 +14,19 @@ type Member = {
     };
 }; 
 
-type Team = {
-    id: string;
-    name: string; 
-}; 
-
-type Game = {
-    id: string; 
-    home_team: {
-        name: string; 
-    };
-    home_score: number;
-    away_team: {
-        name: string; 
-    }; 
-    away_score: number; 
-    game_date: Date; 
-    location: string; 
-}; 
-
-export default function ShowLeagues({ params }: PageProps) {
+export default function ShowMembers() {
     const supabase = createClient();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
-    const [name, setName] = useState(''); 
-    const [season, setSeason] = useState(''); 
     const [members, setMembers] = useState<Member[]>([]); 
-    const [teams, setTeams] = useState<Team[]>([]); 
-    const [games, setGames] = useState<Game[]>([]); 
     const [isOwner, setIsOwner] = useState(false); 
-    const [home_id, setHomeID] = useState('');
-    const [away_id, setAwayID] = useState('');
-    const [showForm, setShowForm] = useState(false); 
-    const [showGForm, setGShowForm] = useState(false); 
+    const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] =  useState(true); 
 
     async function loadPage() {
         setLoading(true); 
         try {
-            await getLeague(); 
-            await getMembers(); 
-            await getTeams(); 
-            await getGames(); 
+            await getMembers();  
         } catch (error) {
             console.log(error);
         } finally {
@@ -71,20 +34,6 @@ export default function ShowLeagues({ params }: PageProps) {
         }
     }
 
-    async function getLeague() {
-        const { id } = await params;
-        const supabase = createClient(); 
-        const { data, error } = await supabase
-            .from('leagues')
-            .select('*')
-            .eq('id', id)
-            .single();
-        if (error) {
-            return; 
-        }
-        setName(data.name); 
-        setSeason(data.season); 
-    }
     async function getMembers(){
         const { id } = await params;
         const supabase = createClient(); 
@@ -105,40 +54,9 @@ export default function ShowLeagues({ params }: PageProps) {
         }
         setMembers(data);
     }
-    async function getTeams () {
-        const { id } = await params; 
-        const supabase = createClient(); 
-        const { data, error } = await supabase
-            .from('teams')
-            .select(`
-                id,
-                name
-                `)
-            .eq('league_id', id)
-        if (error) {
-            console.log("Team error:", error); 
-        }
-        setTeams(data); 
-    }
-    async function getGames () {
-        const { id } = await params;
-        const supabase = createClient(); 
-        const today = new Date().toISOString().split('T')[0];
-        const { data, error } = await supabase 
-            .from('games')
-            .select(`
-                home_team(name),
-                away_team (name),
-                game_date, 
-                location,
-                `)
-            .eq('league_id', id)
-            .gte('game_date', today)
-            .order('game_date', { ascending: false });
-        setGames(data); 
-    }
+
     useEffect(() => {
-      async function getUser() {
+        async function getUser() {
         const supabase = createClient(); 
         const {
             data : {user},
@@ -162,55 +80,9 @@ export default function ShowLeagues({ params }: PageProps) {
                 setIsOwner(true)
             }
         }
-      }
-      getUser();
+        }
+        getUser();
     }, []); 
-
-    async function addTeam(teamName: string) {
-        const {id} = await params; 
-        if (!user){
-            return; 
-        }
-        const { data, error } = await supabase
-            .from('teams')
-            .insert({
-                league_id: id,
-                name: teamName
-            })
-            .select()
-            .single()
-        if (error) {
-            console.log(error); 
-            return; 
-        }
-        setTeams(prevTeams => [...prevTeams, data]); 
-        setShowForm(false);
-    }
-
-    async function addGame(homeId: string,
-    awayId: string,
-    date: Date,
-    location: string) {
-        if (!user){
-            return; 
-        }
-        const { data, error } = await supabase
-            .from('games')
-            .insert({
-                home_id: homeId,
-                away_id: awayId,
-                game_date: date,
-                location: location, 
-            })
-            .select()
-            .single()
-        if (error) {
-            console.log(error); 
-            return; 
-        }
-        setGames(prevTeams => [...prevTeams, data]); 
-        setGShowForm(false);
-    }
 
     if (loading) {
         return (
@@ -253,24 +125,10 @@ export default function ShowLeagues({ params }: PageProps) {
             </div>
         );
     }
-
     return (
         <div>
-            <div style={styles.navContainer}>
-                <button onClick={() => router.push('/dashboard')} style={styles.navButton}>←</button>
-                <button onClick={() => router.push('/members')} style={styles.navButton}>Contact</button>
-                <button onClick={() => router.push('/teams')} style={styles.navButton}>Teams</button>
-                <button onClick={() => router.push('/games')} style={styles.navButton}>Games</button>
-            </div>
             <div style={styles.container}>
-                <p >Name: {name}</p>
-                <p >Season: {season}</p>
-                <h1>Welcome to {name}!</h1>
-                <h2>League Home</h2>
-                <p>
-                    We will be competing in the {season} and we look forward to seeing you there!
-                    If you want to be added as a player or a coach, contact the owner of the league and they will be able to add you in. 
-                </p>
+                <h2>Members</h2>
             </div>
             <div style={styles.container}>
                 <div style={styles.subContainer}>
@@ -285,56 +143,17 @@ export default function ShowLeagues({ params }: PageProps) {
                         ))}
                     </div>
                 </div>
-                <div style={styles.subContainer}>
-                    <h1 style={styles.title}>Teams</h1>
-                    {isOwner && ( 
-                        <button style={styles.button} onClick={() => setShowForm(true)}>
-                            Create Team
-                            </button> 
-                    )}
-                    <div style={styles.subSubContainer}>
-                        {teams.map((team) => (
-                            <div key={team.id} style={styles.subSubSubContainer}>
-                                <p>Name: {team.name}</p>
-                                <button style={styles.navButton} onClick={() => router.push(`/teams/${team.id}`)}>Visit</button> 
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div style={styles.subContainer}>
-                    <h1 style={styles.title}>Games</h1>
-                    {isOwner && (
-                        <button style={styles.button} onClick={() => setGShowForm(true)}>
-                            Create Game
-                        </button>
-                    )}
-                    <div style={styles.subSubContainer}>
-                        {(games ?? []).map((game) => (
-                            <div key={game.id}>
-                                <p>Game: {game.home_team?.name} vs {game.away_team?.name}</p>
-                                <p>Date: {game?.game_date.toLocaleDateString()}</p>
-                                <p>Address: {game?.location}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
                 {showForm && (
-                    <AddTeamForm
-                        onAddTeam={addTeam}
-                        onCancel={() => setShowForm(false)}
-                    />
-                )}
-                {showGForm && (
-                    <AddGameForm
-                        teams={teams}
-                        onAddGame={addGame}
-                        onCancel={() => setGShowForm(false)}
-                    />
+                    
                 )}
             </div>
         </div>
     )
 }
+
+
+
+
 
 const styles = {
     container: {
