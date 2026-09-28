@@ -108,6 +108,7 @@ export default function ShowPlayers({params}: PageProps) {
         setPlayerFName('');
         setPlayerLName(''); 
         setJersey(0); 
+        setShowForm(false); 
     }
 
     if (loading) {
@@ -155,7 +156,7 @@ export default function ShowPlayers({params}: PageProps) {
     return (
         <div>
             <div style={styles.navContainer}>
-                <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.backButton}>←</button>
+                <button onClick={() => router.push(`/leagues/${leagueID}/teams`)} style={styles.backButton}>←</button>
                 <p style={styles.navbarText}>Name: {name}</p>
             </div>
             <div style={styles.container}>
@@ -163,7 +164,7 @@ export default function ShowPlayers({params}: PageProps) {
                     <h1 style={styles.title}>Players</h1>
                     <div style={styles.subSubContainer}>
                         {players.map((player) => (
-                            <div key={player.id}>
+                            <div style={styles.subSubSubContainer} key={player.id}>
                                 <p>Name: {player.first_name} {player.last_name}</p>
                                 <p>Jersey: {player.jersey}</p>
                             </div>
@@ -223,7 +224,6 @@ const styles = {
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
         height: '100vh',
         width: '100vw',
     },
@@ -233,10 +233,11 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '40%',
+        width: '80%',
         height: 'auto', 
         borderRadius: '10px',
-        border: '1px solid'
+        border: '1px solid',
+        margin: '60px'
     }, 
     navContainer: {
         backgroundColor: '#3f414d', 
@@ -249,15 +250,25 @@ const styles = {
         borderBottom: '1px solid', 
     }, 
     subSubContainer: {
+        backgroundColor: '#FFFFF0', 
+        display: 'flex', 
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '10px',
+        marginBottom: '10px',
+        padding: '5px'
+    }, 
+    subSubSubContainer: {
         backgroundColor: '#f0f6fb', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: '10px',
-        border: '1px solid',
-        marginBottom: '10px',
-        padding: '5px'
+        margin: '10px',
+        padding: '5px',
+        borderRadius: '5px',
+        border: '1px solid'
     }, 
     input: {
         backgroundColor: '#fdfefe', 

@@ -228,7 +228,7 @@ const styles = {
         flexDirection: 'row',  
     }, 
     subSubContainer: {
-        backgroundColor: '#f0f6fb', 
+        backgroundColor: '#eff5fb', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -251,7 +251,7 @@ const styles = {
         margin: '5px', 
     }, 
     button: {
-        backgroundColor: '#e1edf8',
+        backgroundColor: '#e8ffe5',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',
@@ -261,9 +261,7 @@ const styles = {
         borderRadius: '5px',
     },
     subButton: {
-        backgroundColor: '#f5faef',
-        border: '1px solid', 
-        borderColor: '#000000',
+        backgroundColor: '#FFFFF0',
         padding: '5px 10px',
         cursor: 'pointer',
         margin: '3px', 

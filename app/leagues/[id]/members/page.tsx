@@ -184,11 +184,6 @@ export default function ShowMembers({ params }: PageProps) {
             <div style={styles.container}>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Members</h1>
-                    {isOwner && (
-                        <button style={styles.button} onClick={() => setShowForm(true)}>
-                            Add Member
-                        </button>
-                    )}
                     <div style={styles.subSubContainer}>
                         {members.map((member) => (
                             <div key={member.user_id}>
@@ -199,6 +194,11 @@ export default function ShowMembers({ params }: PageProps) {
 
                         ))}
                     </div>
+                    {isOwner && (
+                        <button style={styles.button} onClick={() => setShowForm(true)}>
+                            Add Member
+                        </button>
+                    )}
                 </div>
                 {showForm && (
                     <AddMemberForm
@@ -262,7 +262,7 @@ const styles = {
         margin: '60px', 
     }, 
     subSubContainer: {
-        backgroundColor: '#FFFFF0', 
+        backgroundColor: '#f0f6fb', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -282,7 +282,7 @@ const styles = {
         color: 'white',
     }, 
     button: {
-        backgroundColor: '#e1edf8',
+        backgroundColor: '#d4f7d6',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',

@@ -131,7 +131,7 @@ export default function ShowGames({ params }: PageProps){
                 league_id: leagueID,
                 home_team_id: homeId,
                 away_team_id: awayId,
-                game_date: date,
+                game_date: date.toLocaleDateString('en-CA'),
                 location: location, 
             })
             .select()
@@ -201,20 +201,20 @@ export default function ShowGames({ params }: PageProps){
             <div style={styles.container}>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Games</h1>
-                    {isOwner && (
-                        <button style={styles.button} onClick={() => setGShowForm(true)}>
-                            Create Game
-                        </button>
-                    )}
                     <div style={styles.subSubContainer}>
                         {(games ?? []).map((game) => (
                             <div key={game.id}>
                                 <p>Game: {game.home_team?.name} vs {game.away_team?.name}</p>
                                 <p>Date: {new Date(game.game_date + 'T00:00:00').toLocaleDateString()}</p>
-                                <p>Address: {game?.location}</p>
+                                <p>Location: {game?.location}</p>
                             </div>
                         ))}
                     </div>
+                    {isOwner && (
+                        <button style={styles.button} onClick={() => setGShowForm(true)}>
+                            Create Game
+                        </button>
+                    )}
                 </div>
                 {showGForm && (
                     <AddGameForm
@@ -274,7 +274,7 @@ const styles = {
         margin: '60px', 
     }, 
     subSubContainer: {
-        backgroundColor: '#FFFFF0', 
+        backgroundColor: '#eff5fb', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -283,13 +283,6 @@ const styles = {
         border: '1px solid',
         marginBottom: '10px',
         padding: '5px'
-    }, 
-    subSubSubContainer: {
-        backgroundColor: '#FFFFF0', 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
     }, 
     input: {
         backgroundColor: '#fdfefe', 
@@ -309,7 +302,7 @@ const styles = {
         color: 'white',
     }, 
     button: {
-        backgroundColor: '#e1edf8',
+        backgroundColor: '#d4f7d6',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',

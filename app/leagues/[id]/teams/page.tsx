@@ -160,11 +160,6 @@ export default function ShowTeams({ params }: PageProps){
             <div style={styles.container}>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Teams</h1>
-                    {isOwner && ( 
-                        <button style={styles.button} onClick={() => setShowForm(true)}>
-                            Create Team
-                            </button> 
-                    )}
                     <div style={styles.subSubContainer}>
                         {teams.map((team) => (
                             <div key={team.id} style={styles.subSubContainer}>
@@ -175,6 +170,11 @@ export default function ShowTeams({ params }: PageProps){
                             </div>
                         ))}
                     </div>
+                    {isOwner && ( 
+                        <button style={styles.button} onClick={() => setShowForm(true)}>
+                            Create Team
+                            </button> 
+                    )}
                 </div>
             </div>
                 {showForm && (
@@ -229,7 +229,6 @@ const styles = {
         width: '80%',
         height: 'auto', 
         borderRadius: '10px',
-        
         margin: '60px', 
     }, 
     subSubContainer: {
@@ -244,6 +243,7 @@ const styles = {
         padding: '5px'
     }, 
     subSubSubContainer: {
+        backgroundColor: '#eff5fb', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -263,7 +263,7 @@ const styles = {
         color: 'white',
     }, 
     button: {
-        backgroundColor: '#e1edf8',
+        backgroundColor: '#d4f7d6',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',
@@ -283,7 +283,7 @@ const styles = {
         borderRadius: '5px',
     }, 
     subButton: {
-        backgroundColor: '#eff5fb',
+        backgroundColor: '#FFFFF0',
         paddingRight: '10px',
         paddingLeft: '10px',
         cursor: 'pointer',
