@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import AddTeamForm from '@/components/AddTeamForm';
+import { useParams } from 'next/navigation';
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -23,7 +24,7 @@ export default function ShowTeams({ params }: PageProps){
     const [isOwner, setIsOwner] = useState(false); 
     const [showForm, setShowForm] = useState(false); 
     const [loading, setLoading] =  useState(true); 
-    const [leagueID, setLeagueID] = useState('');
+    const { id: leagueID } = useParams<{ id: string }>();
 
     async function loadPage() {
         setLoading(true); 
@@ -37,8 +38,7 @@ export default function ShowTeams({ params }: PageProps){
     }
 
     async function getTeams () {
-        const { id } = await params; 
-        setLeagueID(id); 
+        const { id } = await params;  
         const supabase = createClient(); 
         const { data, error } = await supabase
             .from('teams')
@@ -68,7 +68,7 @@ export default function ShowTeams({ params }: PageProps){
                 .from('league_members')
                 .select('role')
                 .eq('user_id', user.id)
-                .select()
+                .eq('league_id', leagueID)
                 .single()
             if (error) {
                 console.log(error);

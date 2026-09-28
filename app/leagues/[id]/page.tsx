@@ -218,8 +218,8 @@ const styles = {
     }, 
     text: {
         fontSize: '18px', 
-        margin: '5px', 
-        padding: '20px'
+        margin: '15px', 
+        width: '80%'
     }, 
     navbarText: {
         fontSize: '18px', 

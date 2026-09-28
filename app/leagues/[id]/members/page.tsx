@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
+import AddMemberForm from '@/components/AddMemberForm';
+import { useParams } from 'next/navigation';
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -26,7 +28,7 @@ export default function ShowMembers({ params }: PageProps) {
     const [isOwner, setIsOwner] = useState(false); 
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] =  useState(true); 
-    const [leagueID, setLeagueID] = useState('');
+    const { id: leagueID } = useParams<{ id: string }>();
 
     async function loadPage() {
         setLoading(true); 
@@ -41,7 +43,6 @@ export default function ShowMembers({ params }: PageProps) {
 
     async function getMembers(){
         const { id } = await params;
-        setLeagueID(id); 
         const supabase = createClient(); 
         const { data, error } = await supabase
             .from('league_members')
@@ -68,7 +69,7 @@ export default function ShowMembers({ params }: PageProps) {
             data : {user},
         } = await supabase.auth.getUser(); 
         await loadPage(); 
-        if (!user) {
+        if (!user || !leagueID) {
             router.push('/'); 
         } else {
             setUser(user); 
@@ -76,19 +77,56 @@ export default function ShowMembers({ params }: PageProps) {
                 .from('league_members')
                 .select('role')
                 .eq('user_id', user.id)
-                .select()
-                .single()
+                .eq('league_id', leagueID)
+                .maybeSingle()
+            console.log(data?.role); 
             if (error) {
                 console.log(error);
                 return; 
             }
-            if (data.role == 'owner') {
+            console.log(data?.role); 
+            if (data?.role == 'owner') {
                 setIsOwner(true)
             }
         }
         }
         getUser();
     }, []); 
+
+    async function addMember(email: string, role: string) {
+        if (!user){
+            return; 
+        }
+        const { data: found, error: lookupError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', email.trim().toLowerCase())
+            .maybeSingle();
+
+        if (lookupError) {
+            console.log(lookupError);
+            return;
+        }
+        if (!found) {
+            console.log('No user with that email');
+            return;
+        }
+        const { data, error } = await supabase
+            .from('league_members')
+            .insert({
+                league_id: leagueID,
+                user_id: found.id,
+                role: role,
+            })
+            .select()
+            .single()
+        if (error) {
+            console.log(error); 
+            return; 
+        }
+        setMembers(prevMembers => [...prevMembers, data]); 
+        setShowForm(false);
+    }
 
     if (loading) {
         return (
@@ -146,6 +184,11 @@ export default function ShowMembers({ params }: PageProps) {
             <div style={styles.container}>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Members</h1>
+                    {isOwner && (
+                        <button style={styles.button} onClick={() => setShowForm(true)}>
+                            Add Member
+                        </button>
+                    )}
                     <div style={styles.subSubContainer}>
                         {members.map((member) => (
                             <div key={member.user_id}>
@@ -153,12 +196,17 @@ export default function ShowMembers({ params }: PageProps) {
                                 <p>Email: {member.users?.email}</p>
                                 <p>Role: {member.role}</p>
                             </div>
+
                         ))}
                     </div>
                 </div>
-                {/* {showForm && (
-                    
-                )} */}
+                {showForm && (
+                    <AddMemberForm
+                        members={members}
+                        onAddMember={addMember}
+                        onCancel={() => setShowForm(false)}
+                    />
+                )}
             </div>
         </div>
     )
@@ -233,6 +281,16 @@ const styles = {
         margin: 'auto', 
         color: 'white',
     }, 
+    button: {
+        backgroundColor: '#e1edf8',
+        border: '1px solid', 
+        borderColor: '#000000',
+        padding: '10px 20px',
+        cursor: 'pointer',
+        margin: '5px', 
+        marginBottom: '15px',
+        borderRadius: '5px',
+    },
     navButton: {
         backgroundColor: '#e1edf8',
         border: '1px solid', 
