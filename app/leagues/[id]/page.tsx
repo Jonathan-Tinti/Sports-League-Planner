@@ -113,14 +113,17 @@ export default function ShowLeagues({ params }: PageProps) {
                 <button onClick={() => router.push(`/leagues/${leagueID}/games`)} style={styles.navButton}>Games</button>
             </div>
             <div style={styles.container}>
-                <p >Name: {name}</p>
-                <p >Season: {season}</p>
-                <h1>Welcome to {name}!</h1>
-                <h2>League Home</h2>
-                <p>
-                    We will be competing in the {season} and we look forward to seeing you there!
-                    If you want to be added as a player or a coach, contact the owner of the league and they will be able to add you in. 
-                </p>
+                <div style={styles.subContainer}>
+                    <div style={styles.subSubContainer}>
+                        <p style={styles.title}>Name: {name}</p>
+                        <p style={styles.title}>Season: {season}</p>
+                    </div>
+                    <h1 style={styles.subTitle}>Welcome to {name}!</h1>
+                    <p style={styles.text}>
+                        We will be competing in the {season} and we look forward to seeing you there!
+                        If you want to be added as a player or a coach, contact the owner of the league and they will be able to add you in. 
+                    </p>
+                </div>
             </div>
         </div>
     )
@@ -131,6 +134,7 @@ const styles = {
         backgroundColor: '#eef0f0',
         display: 'flex', 
         flexDirection: 'row',
+        justifyContent: 'center',
         height: '100vh',
         width: '100vw',
     },
@@ -143,54 +147,41 @@ const styles = {
         width: '100%',
         height: '60px',
         borderBottom: '1px solid', 
-        paddingLeft: '200px',
-        paddingRight: '200px'
+        paddingLeft: '100px',
+        paddingRight: '300px'
+    }, 
+    navSubContainer: {
+        backgroundColor: '#3f414d', 
+        display: 'flex',
+        flexDirection: 'row', 
+        alignItems: 'center',
+        justifyContent: 'space-between', 
+        width: '30%',
+        height: '60px',
+        flex: '1'
+    },
+    dummy: {
+        flex: '1'
     }, 
     subContainer: {
         backgroundColor: '#FFFFF0', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
-        width: '40%',
+        width: '80%',
         height: 'auto', 
         borderRadius: '10px',
-        border: '1px solid',
+        // border: '1px solid',
         margin: '60px', 
     }, 
     subSubContainer: {
         backgroundColor: '#FFFFF0', 
         display: 'flex', 
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: '10px',
-        border: '1px solid',
-        marginBottom: '10px',
-        padding: '5px'
-    }, 
-    subSubSubContainer: {
-        backgroundColor: '#FFFFF0', 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }, 
-    input: {
-        backgroundColor: '#fdfefe', 
-        border: '1px solid', 
-        borderColor: '#000000', 
-        padding: '10px', 
-        margin: '10px 20px', 
-        borderRadius: '5px',
-    }, 
-    text: {
-        fontSize: '18px', 
-        margin: '5px', 
-    }, 
-    navbarText: {
-        fontSize: '18px', 
-        margin: 'auto', 
-        color: 'white',
+        width: '80%',
+        height: 'auto', 
     }, 
     button: {
         backgroundColor: '#e1edf8',
@@ -208,28 +199,15 @@ const styles = {
         borderColor: '#000000',
         padding: '5px 10px',
         cursor: 'pointer',
-        // marginRight: '200px', 
-        // marginLeft: '200px', 
         top: '15px',
         right: '15px', 
-        borderRadius: '5px',
-    }, 
-    subButton: {
-        backgroundColor: '#eff5fb',
-        border: '1px solid', 
-        borderColor: '#000000',
-        padding: '5px 10px',
-        cursor: 'pointer',
-        margin: '3px', 
-        marginBottom: '5px',
         borderRadius: '5px',
     }, 
     title: {
         fontSize: '28px',
         fontWeight: 'bold',
         position: 'relative',
-        marginTop: '10px', 
-        marginBottom: '10px', 
+        margin: '10px', 
         top: 0
     }, 
     subTitle: {
@@ -238,29 +216,16 @@ const styles = {
         top: 0,
         margin: '10px'
     }, 
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-    },
-    form: {
-        backgroundColor: '#FFFFF0',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '400px',
-        padding: '30px',
-        borderRadius: '10px',
-        border: '1px solid',
-    },
+    text: {
+        fontSize: '18px', 
+        margin: '5px', 
+        padding: '20px'
+    }, 
+    navbarText: {
+        fontSize: '18px', 
+        margin: 'auto', 
+        color: 'white',
+    }, 
     loadingScreen: {
         minHeight: '100vh',
         display: 'flex',

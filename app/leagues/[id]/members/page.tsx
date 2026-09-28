@@ -133,8 +133,17 @@ export default function ShowMembers({ params }: PageProps) {
     }
     return (
         <div>
+            <div style={styles.navContainer}>
+                <div style={styles.dummy}>
+                    <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
+                </div>
+                <div style={styles.navSubContainer}>   
+                    <button onClick={() => router.push(`/leagues/${leagueID}/teams`)} style={styles.navButton}>Teams</button>
+                    <button onClick={() => router.push(`/leagues/${leagueID}/games`)} style={styles.navButton}>Games</button>
+                </div>
+                <div style={styles.dummy} aria-hidden="true"></div>
+            </div>
             <div style={styles.container}>
-                <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Members</h1>
                     <div style={styles.subSubContainer}>
@@ -166,6 +175,7 @@ const styles = {
         flexDirection: 'row',
         height: '100vh',
         width: '100vw',
+        justifyContent: 'center',
     },
     navContainer: {
         backgroundColor: '#3f414d', 
@@ -176,18 +186,31 @@ const styles = {
         width: '100%',
         height: '60px',
         borderBottom: '1px solid', 
-        paddingLeft: '200px',
-        paddingRight: '200px'
+        paddingLeft: '25px',
+        paddingRight: '25px'
+    },
+    navSubContainer: {
+        backgroundColor: '#3f414d', 
+        display: 'flex',
+        flexDirection: 'row', 
+        alignItems: 'center',
+        justifyContent: 'space-between', 
+        width: '30%',
+        height: '60px',
+        flex: '1'
+    },
+    dummy: {
+        flex: '1'
     }, 
     subContainer: {
         backgroundColor: '#FFFFF0', 
         display: 'flex', 
         flexDirection: 'column',
-        alignItems: 'center',
-        width: '40%',
+        alignItems: 'center', 
+        width: '80%',
         height: 'auto', 
         borderRadius: '10px',
-        border: '1px solid',
+        // border: '1px solid',
         margin: '60px', 
     }, 
     subSubContainer: {
@@ -201,21 +224,6 @@ const styles = {
         marginBottom: '10px',
         padding: '5px'
     }, 
-    subSubSubContainer: {
-        backgroundColor: '#FFFFF0', 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }, 
-    input: {
-        backgroundColor: '#fdfefe', 
-        border: '1px solid', 
-        borderColor: '#000000', 
-        padding: '10px', 
-        margin: '10px 20px', 
-        borderRadius: '5px',
-    }, 
     text: {
         fontSize: '18px', 
         margin: '5px', 
@@ -225,36 +233,14 @@ const styles = {
         margin: 'auto', 
         color: 'white',
     }, 
-    button: {
-        backgroundColor: '#e1edf8',
-        border: '1px solid', 
-        borderColor: '#000000',
-        padding: '10px 20px',
-        cursor: 'pointer',
-        margin: '5px', 
-        marginBottom: '15px',
-        borderRadius: '5px',
-    },
     navButton: {
         backgroundColor: '#e1edf8',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '5px 10px',
         cursor: 'pointer',
-        // marginRight: '200px', 
-        // marginLeft: '200px', 
         top: '15px',
         right: '15px', 
-        borderRadius: '5px',
-    }, 
-    subButton: {
-        backgroundColor: '#eff5fb',
-        border: '1px solid', 
-        borderColor: '#000000',
-        padding: '5px 10px',
-        cursor: 'pointer',
-        margin: '3px', 
-        marginBottom: '5px',
         borderRadius: '5px',
     }, 
     title: {
@@ -271,29 +257,6 @@ const styles = {
         top: 0,
         margin: '10px'
     }, 
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-    },
-    form: {
-        backgroundColor: '#FFFFF0',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '400px',
-        padding: '30px',
-        borderRadius: '10px',
-        border: '1px solid',
-    },
     loadingScreen: {
         minHeight: '100vh',
         display: 'flex',

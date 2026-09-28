@@ -147,8 +147,17 @@ export default function ShowTeams({ params }: PageProps){
 
     return (
         <div>
+            <div style={styles.navContainer}>
+                <div style={styles.dummy}>
+                    <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
+                </div>
+                <div style={styles.navSubContainer}>   
+                    <button onClick={() => router.push(`/leagues/${leagueID}/members`)} style={styles.navButton}>Contact</button>
+                    <button onClick={() => router.push(`/leagues/${leagueID}/games`)} style={styles.navButton}>Games</button>
+                </div>
+                <div style={styles.dummy} aria-hidden="true"></div>
+            </div>
             <div style={styles.container}>
-                <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Teams</h1>
                     {isOwner && ( 
@@ -158,9 +167,11 @@ export default function ShowTeams({ params }: PageProps){
                     )}
                     <div style={styles.subSubContainer}>
                         {teams.map((team) => (
-                            <div key={team.id} style={styles.subSubSubContainer}>
-                                <p>Name: {team.name}</p>
-                                <button style={styles.navButton} onClick={() => router.push(`/team/${team.id}`)}>Visit</button> 
+                            <div key={team.id} style={styles.subSubContainer}>
+                                <div style={styles.subSubSubContainer}>
+                                    <p>Name: {team.name}</p>
+                                    <button style={styles.subButton} onClick={() => router.push(`/team/${team.id}`)}>Visit</button> 
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -181,6 +192,7 @@ const styles = {
         backgroundColor: '#eef0f0',
         display: 'flex', 
         flexDirection: 'row',
+        justifyContent: 'center',
         height: '100vh',
         width: '100vw',
     },
@@ -196,42 +208,50 @@ const styles = {
         paddingLeft: '200px',
         paddingRight: '200px'
     }, 
+    navSubContainer: {
+        backgroundColor: '#3f414d', 
+        display: 'flex',
+        flexDirection: 'row', 
+        alignItems: 'center',
+        justifyContent: 'space-between', 
+        width: '30%',
+        height: '60px',
+        flex: '1'
+    },
+    dummy: {
+        flex: '1'
+    }, 
     subContainer: {
         backgroundColor: '#FFFFF0', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
-        width: '40%',
+        width: '80%',
         height: 'auto', 
         borderRadius: '10px',
-        border: '1px solid',
+        
         margin: '60px', 
     }, 
     subSubContainer: {
         backgroundColor: '#FFFFF0', 
         display: 'flex', 
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: '10px',
-        border: '1px solid',
-        marginBottom: '10px',
+        
+        margin: '10px',
         padding: '5px'
     }, 
     subSubSubContainer: {
-        backgroundColor: '#FFFFF0', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-    }, 
-    input: {
-        backgroundColor: '#fdfefe', 
-        border: '1px solid', 
-        borderColor: '#000000', 
-        padding: '10px', 
-        margin: '10px 20px', 
-        borderRadius: '5px',
+        margin: '10px',
+        border: '1px solid',
+        borderRadius: '10px',
+        padding: '5px'
     }, 
     text: {
         fontSize: '18px', 
@@ -258,20 +278,16 @@ const styles = {
         borderColor: '#000000',
         padding: '5px 10px',
         cursor: 'pointer',
-        // marginRight: '200px', 
-        // marginLeft: '200px', 
         top: '15px',
         right: '15px', 
         borderRadius: '5px',
     }, 
     subButton: {
         backgroundColor: '#eff5fb',
-        border: '1px solid', 
-        borderColor: '#000000',
-        padding: '5px 10px',
+        paddingRight: '10px',
+        paddingLeft: '10px',
         cursor: 'pointer',
-        margin: '3px', 
-        marginBottom: '5px',
+        marginTop: '10px', 
         borderRadius: '5px',
     }, 
     title: {

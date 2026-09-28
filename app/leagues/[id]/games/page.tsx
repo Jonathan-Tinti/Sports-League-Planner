@@ -169,8 +169,17 @@ export default function ShowGames({ params }: PageProps){
 
     return (
         <div>
+            <div style={styles.navContainer}>
+                <div style={styles.dummy}>
+                    <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
+                </div>
+                <div style={styles.navSubContainer}>   
+                    <button onClick={() => router.push(`/leagues/${leagueID}/members`)} style={styles.navButton}>Contact</button>
+                    <button onClick={() => router.push(`/leagues/${leagueID}/teams`)} style={styles.navButton}>Teams</button>
+                </div>
+                <div style={styles.dummy} aria-hidden="true"></div>
+            </div>
             <div style={styles.container}>
-                <button onClick={() => router.push(`/leagues/${leagueID}`)} style={styles.navButton}>←</button>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Games</h1>
                     {isOwner && (
@@ -207,6 +216,7 @@ const styles = {
         flexDirection: 'row',
         height: '100vh',
         width: '100vw',
+        justifyContent: 'center'
     },
     navContainer: {
         backgroundColor: '#3f414d', 
@@ -220,12 +230,25 @@ const styles = {
         paddingLeft: '200px',
         paddingRight: '200px'
     }, 
+    navSubContainer: {
+        backgroundColor: '#3f414d', 
+        display: 'flex',
+        flexDirection: 'row', 
+        alignItems: 'center',
+        justifyContent: 'space-between', 
+        width: '30%',
+        height: '60px',
+        flex: '1'
+    },
+    dummy: {
+        flex: '1'
+    }, 
     subContainer: {
         backgroundColor: '#FFFFF0', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
-        width: '40%',
+        width: '80%',
         height: 'auto', 
         borderRadius: '10px',
         border: '1px solid',
