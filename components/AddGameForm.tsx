@@ -65,8 +65,6 @@ export default function AddGameForm({
                     Create Game
                 </h1>
 
-                <label>Home Team</label>
-
                 <select
                     value={homeId}
                     onChange={(e) => setHomeId(e.target.value)}
@@ -82,8 +80,6 @@ export default function AddGameForm({
                         </option>
                     ))}
                 </select>
-
-                <label>Away Team</label>
 
                 <select
                     value={awayId}

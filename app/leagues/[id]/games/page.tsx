@@ -203,8 +203,8 @@ export default function ShowGames({ params }: PageProps){
                     <h1 style={styles.title}>Games</h1>
                     <div style={styles.subSubContainer}>
                         {(games ?? []).map((game) => (
-                            <div key={game.id}>
-                                <p>Game: {game.home_team?.name} vs {game.away_team?.name}</p>
+                            <div style={styles.subSubSubContainer} key={game.id}>
+                                <p style={styles.text}>{game.home_team?.name} vs {game.away_team?.name}</p>
                                 <p>Date: {new Date(game.game_date + 'T00:00:00').toLocaleDateString()}</p>
                                 <p>Location: {game?.location}</p>
                             </div>
@@ -284,6 +284,13 @@ const styles = {
         marginBottom: '10px',
         padding: '5px'
     }, 
+    subSubSubContainer: {
+        backgroundColor: '#ffffff', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }, 
     input: {
         backgroundColor: '#fdfefe', 
         border: '1px solid', 
@@ -293,8 +300,8 @@ const styles = {
         borderRadius: '5px',
     }, 
     text: {
-        fontSize: '18px', 
-        margin: '5px', 
+        fontSize: '18px',  
+        fontWeight: 'bold'
     }, 
     navbarText: {
         fontSize: '18px', 

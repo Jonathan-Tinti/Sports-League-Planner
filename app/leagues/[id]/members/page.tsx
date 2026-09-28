@@ -186,8 +186,8 @@ export default function ShowMembers({ params }: PageProps) {
                     <h1 style={styles.title}>Members</h1>
                     <div style={styles.subSubContainer}>
                         {members.map((member) => (
-                            <div key={member.user_id}>
-                                <p>Name: {member.users?.name}</p>
+                            <div style={styles.subSubSubContainer} key={member.user_id}>
+                                <p style={styles.text}>{member.users?.name}</p>
                                 <p>Email: {member.users?.email}</p>
                                 <p>Role: {member.role}</p>
                             </div>
@@ -272,9 +272,16 @@ const styles = {
         marginBottom: '10px',
         padding: '5px'
     }, 
+    subSubSubContainer: {
+        backgroundColor: '#ffffff', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }, 
     text: {
         fontSize: '18px', 
-        margin: '5px', 
+        fontWeight: 'bold' 
     }, 
     navbarText: {
         fontSize: '18px', 

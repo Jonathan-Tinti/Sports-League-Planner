@@ -164,7 +164,7 @@ export default function ShowTeams({ params }: PageProps){
                         {teams.map((team) => (
                             <div key={team.id} style={styles.subSubContainer}>
                                 <div style={styles.subSubSubContainer}>
-                                    <p>Name: {team.name}</p>
+                                    <p style={styles.text}>{team.name}</p>
                                     <button style={styles.subButton} onClick={() => router.push(`/team/${team.id}`)}>Visit</button> 
                                 </div>
                             </div>
@@ -238,7 +238,6 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: '10px',
-        
         margin: '10px',
         padding: '5px'
     }, 
@@ -251,11 +250,13 @@ const styles = {
         margin: '10px',
         border: '1px solid #c9ced6',
         borderRadius: '10px',
-        padding: '5px'
+        paddingLeft: '15px',
+        paddingRight: '15px',
+        paddingBottom: '5px'
     }, 
     text: {
         fontSize: '18px', 
-        margin: '5px', 
+        fontWeight: 'bold'
     }, 
     navbarText: {
         fontSize: '18px', 
