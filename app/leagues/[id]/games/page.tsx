@@ -46,6 +46,7 @@ export default function ShowGames({ params }: PageProps){
         setLoading(true); 
         try {
             await getGames(); 
+            await getTeams(); 
         } catch (error) {
             console.log(error);
         } finally {
@@ -55,20 +56,37 @@ export default function ShowGames({ params }: PageProps){
 
     async function getGames () {
         const { id } = await params;
-        const supabase = createClient(); 
         const today = new Date().toISOString().split('T')[0];
         const { data, error } = await supabase 
             .from('games')
             .select(`
-                home_team(name),
-                away_team (name),
+                home_team:teams!home_team_id(name),
+                away_team:teams!away_team_id(name),
                 game_date, 
-                location,
+                location
                 `)
             .eq('league_id', id)
             .gte('game_date', today)
             .order('game_date', { ascending: false });
+        if (error) {
+            console.log(error);
+            return;
+        }
         setGames(data); 
+    }
+
+    async function getTeams() {
+        const { data, error } = await supabase
+            .from('teams')
+            .select('id, name')
+            .eq('league_id', leagueID)
+            .order('name');
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+        setTeams(data ?? []);
     }
 
     useEffect(() => {
@@ -110,8 +128,9 @@ export default function ShowGames({ params }: PageProps){
         const { data, error } = await supabase
             .from('games')
             .insert({
-                home_id: homeId,
-                away_id: awayId,
+                league_id: leagueID,
+                home_team_id: homeId,
+                away_team_id: awayId,
                 game_date: date,
                 location: location, 
             })
@@ -121,7 +140,7 @@ export default function ShowGames({ params }: PageProps){
             console.log(error); 
             return; 
         }
-        setGames(prevTeams => [...prevTeams, data]); 
+        await getGames(); 
         setGShowForm(false);
     }
 
@@ -191,7 +210,7 @@ export default function ShowGames({ params }: PageProps){
                         {(games ?? []).map((game) => (
                             <div key={game.id}>
                                 <p>Game: {game.home_team?.name} vs {game.away_team?.name}</p>
-                                <p>Date: {game?.game_date.toLocaleDateString()}</p>
+                                <p>Date: {new Date(game.game_date + 'T00:00:00').toLocaleDateString()}</p>
                                 <p>Address: {game?.location}</p>
                             </div>
                         ))}

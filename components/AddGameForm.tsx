@@ -112,6 +112,7 @@ export default function AddGameForm({
                     selected={date} 
                     onChange={(date) => setDate(date)} 
                     dateFormat="yyyy-MM-dd"
+                    customInput={<input style={styles.input} />}
                 />
 
                 <div>
