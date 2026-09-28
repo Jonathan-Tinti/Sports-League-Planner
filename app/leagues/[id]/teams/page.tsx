@@ -243,13 +243,13 @@ const styles = {
         padding: '5px'
     }, 
     subSubSubContainer: {
-        backgroundColor: '#eff5fb', 
+        backgroundColor: '#ffffff', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         margin: '10px',
-        border: '1px solid',
+        border: '1px solid #c9ced6',
         borderRadius: '10px',
         padding: '5px'
     }, 
@@ -283,7 +283,7 @@ const styles = {
         borderRadius: '5px',
     }, 
     subButton: {
-        backgroundColor: '#FFFFF0',
+        backgroundColor: '#e1edf8',
         paddingRight: '10px',
         paddingLeft: '10px',
         cursor: 'pointer',

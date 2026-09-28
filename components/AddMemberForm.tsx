@@ -134,7 +134,7 @@ const styles = {
         borderRadius: '5px',
     }, 
     button: {
-        backgroundColor: '#e1edf8',
+        backgroundColor: '#d4f7d6',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',

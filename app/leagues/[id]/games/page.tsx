@@ -274,13 +274,13 @@ const styles = {
         margin: '60px', 
     }, 
     subSubContainer: {
-        backgroundColor: '#eff5fb', 
+        backgroundColor: '#ffffff', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: '10px',
-        border: '1px solid',
+        border: '1px solid #c9ced6',
         marginBottom: '10px',
         padding: '5px'
     }, 

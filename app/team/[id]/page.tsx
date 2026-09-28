@@ -260,7 +260,7 @@ const styles = {
         padding: '5px'
     }, 
     subSubSubContainer: {
-        backgroundColor: '#f0f6fb', 
+        backgroundColor: '#ffffff', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center',
@@ -268,7 +268,7 @@ const styles = {
         margin: '10px',
         padding: '5px',
         borderRadius: '5px',
-        border: '1px solid'
+        border: '1px solid #c9ced6',
     }, 
     input: {
         backgroundColor: '#fdfefe', 
@@ -288,7 +288,7 @@ const styles = {
         color: 'white',
     }, 
     button: {
-        backgroundColor: '#e1edf8',
+        backgroundColor: '#d4f7d6',
         border: '1px solid', 
         borderColor: '#000000',
         padding: '10px 20px',
