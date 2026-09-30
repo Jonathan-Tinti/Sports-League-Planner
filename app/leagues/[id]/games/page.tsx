@@ -16,11 +16,9 @@ type Game = {
     home_team: {
         name: string; 
     };
-    home_score: number;
     away_team: {
         name: string; 
     }; 
-    away_score: number; 
     game_date: Date; 
     location: string; 
 
@@ -37,6 +35,7 @@ export default function ShowGames({ params }: PageProps){
     const [user, setUser] = useState<User | null>(null);
     const [games, setGames] = useState<Game[]>([]); 
     const [isOwner, setIsOwner] = useState(false); 
+    const [isCorR, setIsCorR] = useState(false); 
     const [showGForm, setGShowForm] = useState(false); 
     const [loading, setLoading] =  useState(true); 
     const [teams, setTeams] = useState<Team[]>([]); 
@@ -54,7 +53,7 @@ export default function ShowGames({ params }: PageProps){
         }
     }
 
-    async function getGames () {
+    async function getGames (leagueId: string) {
         const { id } = await params;
         const today = new Date().toISOString().split('T')[0];
         const { data, error } = await supabase 
@@ -89,31 +88,39 @@ export default function ShowGames({ params }: PageProps){
         setTeams(data ?? []);
     }
 
+    async function checkRole(userId: string, leagueId: string) {
+        const { data, error } = await supabase
+            .from('league_members')
+            .select('role')
+            .eq('user_id', userId)
+            .eq('league_id', leagueId)
+            .single();
+
+        if (error) {
+            console.log("Role error:", error);
+            return;
+        }
+        if (data.role == 'owner') {
+            setIsOwner(true)
+        } else if (data.role == 'coach' || data.role == 'ref') {
+            setIsCorR(true);
+        }
+    }
+
     useEffect(() => {
         async function getUser() {
-        const supabase = createClient(); 
-        const {
-            data : {user},
-        } = await supabase.auth.getUser(); 
-        await loadPage(); 
-        if (!user) {
-            router.push('/'); 
-        } else {
-            setUser(user); 
-            const { data, error } = await supabase 
-                .from('league_members')
-                .select('role')
-                .eq('user_id', user.id)
-                .eq('league_id', leagueID)
-                .single()
-            if (error) {
-                console.log(error);
-                return; 
+            const {id} = await params; 
+            const supabase = createClient(); 
+            const {
+                data : {user},
+            } = await supabase.auth.getUser();  
+            if (!user) {
+                router.push('/'); 
+            } else {
+                setUser(user); 
+                await loadPage();
+                await checkRole(user.id, id); 
             }
-            if (data.role == 'owner') {
-                setIsOwner(true)
-            }
-        }
         }
         getUser();
     }, []); 
@@ -203,10 +210,15 @@ export default function ShowGames({ params }: PageProps){
                     <h1 style={styles.title}>Games</h1>
                     <div style={styles.subSubContainer}>
                         {(games ?? []).map((game) => (
-                            <div style={styles.subSubSubContainer} key={game.id}>
-                                <p style={styles.text}>{game.home_team?.name} vs {game.away_team?.name}</p>
-                                <p>Date: {new Date(game.game_date + 'T00:00:00').toLocaleDateString()}</p>
-                                <p>Location: {game?.location}</p>
+                            <div key={game.id}>
+                                <div style={styles.subSubSubContainer} >
+                                    <p style={styles.text}>{game.home_team?.name} vs {game.away_team?.name}</p>
+                                    <p>Date: {new Date(game.game_date + 'T00:00:00').toLocaleDateString()}</p>
+                                    <p>Location: {game?.location}</p>
+                                </div>
+                                {(isOwner || isCorR) && (
+                                    <button style={styles.button} onClick={() => router.push(`/game/${game.id}`)}></button>
+                                )}
                             </div>
                         ))}
                     </div>

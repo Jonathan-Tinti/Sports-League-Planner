@@ -10,10 +10,17 @@ type PageProps = {
 };
 
 type Game = {
-    home_team_id: string; 
+    id: string; 
+    league_id: string; 
+    home_team: {
+       name : string;
+    } 
+    away_team: {
+        name: string; 
+    }
+    home_team_id: string;
     away_team_id: string; 
-    game_date: Date; 
-    location: string; 
+    game_date: string; 
     home_score: number; 
     away_score: number; 
 }; 
@@ -23,15 +30,15 @@ export default function EnterGame({params}: PageProps){
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] =  useState(true); 
-    const [awayID, setAwayID] = useState(''); 
-    const [homeID, setHomeID] = useState(''); 
     const [homeScore, setHomeScore] = useState(0); 
     const [awayScore, setAwayScore] = useState(0);
+    const [game, setGame] = useState<Game>(); 
     
 
     async function loadPage() {
+        setLoading(true); 
         try{
-            await updateGame(); 
+            await getGame(); 
         } catch (err) {
             console.log(err);
         } finally {
@@ -39,13 +46,27 @@ export default function EnterGame({params}: PageProps){
         }
     }
 
-    async function updateGame() {
+    async function getGame() {
         const {id} = await params; 
         const supabase = createClient(); 
-        if (!user){
+        const { data, error } = await supabase 
+            .from('games')
+            .select(`
+                game_date,
+                home_score,
+                away_score, 
+                home_team_id,
+                away_team_id,
+                home_team:teams!home_id(name),
+                away_team:teams!away_id(name)
+                `)
+            .eq('id', id)
+            .single()
+        if (error) {
+            console.log(error); 
             return; 
         }
-
+        setGame(data);
     }
 
     useEffect(() => {
@@ -64,9 +85,107 @@ export default function EnterGame({params}: PageProps){
         getUser(); 
     }, []); 
 
+    async function updateGame(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        if (!user || !game){
+            return; 
+        }
+        const {id} = await params; 
+        const supabase = createClient(); 
+        const gameDate = new Date(game.game_date);
+        const now = new Date();
+        if (gameDate > now) {
+            console.log("This game has not happened yet.");
+            return;
+        }
+        
+        const { data, error } = await supabase
+            .from('games')
+            .update({
+                home_score: homeScore,
+                away_score: awayScore
+            })
+            .eq('id', game.id)
+            .select()
+            .single();
+        if (error) {
+            console.log("Error updating game:", error);
+            return;
+        }
+        router.push(`/leagues/${game.league_id}/games`);
+    }
+
+    if (loading) {
+        return (
+            <div style={styles.loadingScreen}>
+                <style>
+                    {`
+                        @keyframes spin {
+                            from {
+                                transform: rotate(0deg);
+                            }
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
+
+                        @keyframes loading {
+                            0% {
+                                transform: translateX(-250%);
+                            }
+                            100% {
+                                transform: translateX(650%);
+                            }
+                        }
+                    `}
+                </style>
+
+                <div style={styles.loadingBall}>⚽</div>
+
+                <h1 style={styles.loadingTitle}>
+                    Soccer League
+                </h1>
+
+                <p style={styles.loadingText}>
+                    Preparing the pitch...
+                </p>
+
+                <div style={styles.loadingBar}>
+                    <div style={styles.loadingProgress}></div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div>
-            hi 
+            <div style={styles.navContainer}>
+                <button onClick={() => router.push(`/leagues/${game?.league_id}/games`)} style={styles.backButton}>←</button>
+            </div>
+            <div style={styles.container}>
+                <h1>{game?.home_team.name} vs {game?.away_team.name}</h1>
+                <h1>Score:</h1>
+                <form onSubmit={updateGame}>
+                    <div>
+                        <input
+                            type="number"
+                            min="0"
+                            value={homeScore}
+                            onChange={(e) => setHomeScore(parseInt(e.target.value))}
+                        />
+                        <p>-</p>
+                        <input
+                            type="number"
+                            min="0"
+                            value={awayScore}
+                            onChange={(e) => setAwayScore(parseInt(e.target.value))}
+                        />
+                    </div>
+                    <button type="submit" style={styles.button}>
+                        Submit Result
+                    </button>
+                </form>
+            </div>
         </div>
     )
 }

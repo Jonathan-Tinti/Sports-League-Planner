@@ -70,7 +70,7 @@ export default function AddMemberForm({
                     <option value="player">Player</option>
                     <option value="ref">Referee</option>
                     <option value="coach">Coach</option>
-                    <option value="admin">Admin</option>
+                    <option value="owner">Owner</option>
                     </select>
                 <div>
                     <button
