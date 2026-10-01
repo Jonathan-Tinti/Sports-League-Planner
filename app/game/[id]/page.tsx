@@ -33,7 +33,6 @@ export default function EnterGame({params}: PageProps){
     const [homeScore, setHomeScore] = useState(0); 
     const [awayScore, setAwayScore] = useState(0);
     const [game, setGame] = useState<Game>(); 
-    
 
     async function loadPage() {
         setLoading(true); 
@@ -52,13 +51,15 @@ export default function EnterGame({params}: PageProps){
         const { data, error } = await supabase 
             .from('games')
             .select(`
+                id, 
                 game_date,
                 home_score,
                 away_score, 
                 home_team_id,
                 away_team_id,
-                home_team:teams!home_id(name),
-                away_team:teams!away_id(name)
+                home_team:teams!home_team_id(name),
+                away_team:teams!away_team_id(name),
+                league_id
                 `)
             .eq('id', id)
             .single()
@@ -67,6 +68,8 @@ export default function EnterGame({params}: PageProps){
             return; 
         }
         setGame(data);
+        setHomeScore(data.home_score ?? 0);
+        setAwayScore(data.away_score ?? 0);
     }
 
     useEffect(() => {
@@ -160,31 +163,42 @@ export default function EnterGame({params}: PageProps){
     return (
         <div>
             <div style={styles.navContainer}>
-                <button onClick={() => router.push(`/leagues/${game?.league_id}/games`)} style={styles.backButton}>←</button>
+                <div style={styles.dummy}>
+                    <button onClick={() => router.push(`/leagues/${game?.league_id}/games`)} style={styles.backButton}>←</button>
+                </div>
+                <div style={styles.navSubContainer}>   
+                    <button onClick={() => router.push(`/leagues/${game?.league_id}/members`)} style={styles.backButton}>Contact</button>
+                <button onClick={() => router.push(`/leagues/${game?.league_id}/teams`)} style={styles.backButton}>Teams</button>
+                </div>
+                <div style={styles.dummy} aria-hidden="true"></div>
             </div>
             <div style={styles.container}>
-                <h1>{game?.home_team.name} vs {game?.away_team.name}</h1>
-                <h1>Score:</h1>
-                <form onSubmit={updateGame}>
-                    <div>
-                        <input
-                            type="number"
-                            min="0"
-                            value={homeScore}
-                            onChange={(e) => setHomeScore(parseInt(e.target.value))}
-                        />
-                        <p>-</p>
-                        <input
-                            type="number"
-                            min="0"
-                            value={awayScore}
-                            onChange={(e) => setAwayScore(parseInt(e.target.value))}
-                        />
-                    </div>
-                    <button type="submit" style={styles.button}>
-                        Submit Result
-                    </button>
-                </form>
+                <div style={styles.subContainer}>
+                    <h1 style={styles.title}>{game?.home_team.name} vs {game?.away_team.name}</h1>
+                    <h1 style={styles.text}>Score:</h1>
+                    <form onSubmit={updateGame} style={styles.form}>
+                        <div style={styles.subSubContainer}>
+                            <input
+                                style={styles.text}
+                                type="number"
+                                min="0"
+                                value={homeScore}
+                                onChange={(e) => setHomeScore(parseInt(e.target.value))}
+                            />
+                            <p>-</p>
+                            <input
+                                style={styles.text} 
+                                type="number"
+                                min="0"
+                                value={awayScore}
+                                onChange={(e) => setAwayScore(parseInt(e.target.value))}
+                            />
+                        </div>
+                        <button type="submit" style={styles.button}>
+                            Submit Result
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     )
@@ -205,7 +219,7 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '80%',
+        width: '60%',
         height: 'auto', 
         borderRadius: '10px',
         border: '1px solid',
@@ -220,6 +234,19 @@ const styles = {
         width: '100%',
         height: '60px',
         borderBottom: '1px solid', 
+    }, 
+    navSubContainer: {
+        backgroundColor: '#3f414d', 
+        display: 'flex',
+        flexDirection: 'row', 
+        alignItems: 'center',
+        justifyContent: 'space-between', 
+        width: '30%',
+        height: '60px',
+        flex: '1'
+    },
+    dummy: {
+        flex: '1'
     }, 
     subSubContainer: {
         backgroundColor: '#FFFFF0', 
@@ -252,7 +279,7 @@ const styles = {
     }, 
     text: {
         fontSize: '18px', 
-        margin: '5px', 
+        textAlign: 'center', 
     }, 
     navbarText: {
         fontSize: '18px', 
@@ -269,16 +296,6 @@ const styles = {
         marginBottom: '15px',
         borderRadius: '5px',
     },
-    subButton: {
-        backgroundColor: '#f5faef',
-        border: '1px solid', 
-        borderColor: '#000000',
-        padding: '5px 10px',
-        cursor: 'pointer',
-        margin: '3px', 
-        marginBottom: '5px',
-        borderRadius: '5px',
-    }, 
     backButton: {
         backgroundColor: '#e1edf8',
         border: '1px solid', 
@@ -305,18 +322,6 @@ const styles = {
         top: 0,
         margin: '10px'
     }, 
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-    },
     form: {
         backgroundColor: '#FFFFF0',
         display: 'flex',
@@ -326,7 +331,6 @@ const styles = {
         width: '400px',
         padding: '30px',
         borderRadius: '10px',
-        border: '1px solid',
     },
     loadingScreen: {
         minHeight: '100vh',

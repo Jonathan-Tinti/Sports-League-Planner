@@ -42,10 +42,11 @@ export default function ShowGames({ params }: PageProps){
     const { id: leagueID } = useParams<{ id: string }>();
 
     async function loadPage() {
+        const {id} = await params; 
         setLoading(true); 
         try {
-            await getGames(); 
-            await getTeams(); 
+            await getGames(id); 
+            await getTeams(id); 
         } catch (error) {
             console.log(error);
         } finally {
@@ -53,28 +54,29 @@ export default function ShowGames({ params }: PageProps){
         }
     }
 
-    async function getGames (leagueId: string) {
-        const { id } = await params;
-        const today = new Date().toISOString().split('T')[0];
-        const { data, error } = await supabase 
+    async function getGames(leagueId: string) {
+
+        const { data, error } = await supabase
             .from('games')
             .select(`
+                id,
                 home_team:teams!home_team_id(name),
                 away_team:teams!away_team_id(name),
-                game_date, 
+                game_date,
                 location
-                `)
-            .eq('league_id', id)
-            .gte('game_date', today)
-            .order('game_date', { ascending: false });
+            `)
+            .eq('league_id', leagueId)
+            .order('game_date', { ascending: true });
+
         if (error) {
-            console.log(error);
+            console.log("Games error:", error);
             return;
         }
-        setGames(data); 
+
+        setGames(data);
     }
 
-    async function getTeams() {
+    async function getTeams(leagueId: string) {
         const { data, error } = await supabase
             .from('teams')
             .select('id, name')
@@ -147,7 +149,7 @@ export default function ShowGames({ params }: PageProps){
             console.log(error); 
             return; 
         }
-        await getGames(); 
+        await getGames(leagueID); 
         setGShowForm(false);
     }
 
@@ -215,10 +217,10 @@ export default function ShowGames({ params }: PageProps){
                                     <p style={styles.text}>{game.home_team?.name} vs {game.away_team?.name}</p>
                                     <p>Date: {new Date(game.game_date + 'T00:00:00').toLocaleDateString()}</p>
                                     <p>Location: {game?.location}</p>
+                                    {(isOwner || isCorR) && (
+                                        <button style={styles.navButton} onClick={() => router.push(`/game/${game.id}`)}>Add Game Info</button>
+                                    )}
                                 </div>
-                                {(isOwner || isCorR) && (
-                                    <button style={styles.button} onClick={() => router.push(`/game/${game.id}`)}></button>
-                                )}
                             </div>
                         ))}
                     </div>
