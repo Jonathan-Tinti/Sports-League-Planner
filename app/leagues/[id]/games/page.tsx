@@ -223,7 +223,7 @@ export default function ShowGames({ params }: PageProps){
                                     <p>Date: {new Date(game.game_date + 'T00:00:00').toLocaleDateString()}</p>
                                     <p>Location: {game?.location}</p>
                                     {(isOwner || isCorR) && (
-                                        <button style={styles.navButton} onClick={() => router.push(`/game/${game.id}`)}>Add Game Info</button>
+                                        <button style={styles.blueButton} onClick={() => router.push(`/game/${game.id}`)}>Add Game Info</button>
                                     )}
                                 </div>
                             </div>
@@ -293,13 +293,11 @@ const styles = {
         margin: '60px', 
     }, 
     subSubContainer: {
-        backgroundColor: '#ffffff', 
+        backgroundColor: '#FFFFF0', 
         display: 'flex', 
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: '10px',
-        border: '1px solid #c9ced6',
         marginBottom: '10px',
         padding: '5px'
     }, 
@@ -309,6 +307,10 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        margin: '10px',
+        borderRadius: '10px',
+        border: '1px solid #c9ced6',
+        padding: '10px'
     }, 
     input: {
         backgroundColor: '#fdfefe', 
@@ -333,7 +335,7 @@ const styles = {
         borderColor: '#000000',
         padding: '10px 20px',
         cursor: 'pointer',
-        margin: '5px', 
+        marginTop: '5px', 
         marginBottom: '15px',
         borderRadius: '5px',
     },
@@ -343,12 +345,21 @@ const styles = {
         borderColor: '#000000',
         padding: '5px 10px',
         cursor: 'pointer',
-        // marginRight: '200px', 
-        // marginLeft: '200px', 
         top: '15px',
         right: '15px', 
         borderRadius: '5px',
     }, 
+    blueButton: {
+        backgroundColor: '#e1edf8',
+        border: '1px solid', 
+        borderColor: '#000000',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        top: '15px',
+        right: '15px', 
+        borderRadius: '5px',
+        marginTop: '15px'
+    },
     subButton: {
         backgroundColor: '#eff5fb',
         border: '1px solid', 
