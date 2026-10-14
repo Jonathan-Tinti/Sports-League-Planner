@@ -175,7 +175,7 @@ export default function EnterGame({params}: PageProps){
             <div style={styles.container}>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>{game?.home_team.name} vs {game?.away_team.name}</h1>
-                    <h1 style={styles.text}>Score:</h1>
+                    <h1 style={styles.textScore}>Score:</h1>
                     <form onSubmit={updateGame} style={styles.form}>
                         <div style={styles.subSubContainer}>
                             <input
@@ -185,7 +185,7 @@ export default function EnterGame({params}: PageProps){
                                 value={homeScore}
                                 onChange={(e) => setHomeScore(parseInt(e.target.value))}
                             />
-                            <p>-</p>
+                            <p style={styles.dash}>-</p>
                             <input
                                 style={styles.text} 
                                 type="number"
@@ -280,6 +280,17 @@ const styles = {
     text: {
         fontSize: '18px', 
         textAlign: 'center', 
+        border: '1px solid #000000',
+        borderRadius: '5px',
+        width: '50%',
+        paddingLeft: '15px'
+    }, 
+    textScore: {
+        fontSize: '18px', 
+        textAlign: 'center', 
+    }, 
+    dash: {
+        margin: '5px'
     }, 
     navbarText: {
         fontSize: '18px', 
@@ -314,7 +325,8 @@ const styles = {
         position: 'relative',
         marginTop: '10px', 
         marginBottom: '10px', 
-        top: 0
+        top: 0, 
+        textDecoration: 'underline'
     }, 
     subTitle: {
         fontSize: '24px',

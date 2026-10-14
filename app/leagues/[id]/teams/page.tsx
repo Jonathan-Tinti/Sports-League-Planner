@@ -297,7 +297,8 @@ const styles = {
         position: 'relative',
         marginTop: '10px', 
         marginBottom: '10px', 
-        top: 0
+        top: 0,
+        textDecoration: 'underline'
     }, 
     subTitle: {
         fontSize: '24px',

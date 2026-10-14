@@ -40,6 +40,7 @@ export default function ShowGames({ params }: PageProps){
     const [loading, setLoading] =  useState(true); 
     const [teams, setTeams] = useState<Team[]>([]); 
     const { id: leagueID } = useParams<{ id: string }>();
+    const [location, setLocation] = useState(''); 
 
     async function loadPage() {
         const {id} = await params; 
@@ -60,7 +61,7 @@ export default function ShowGames({ params }: PageProps){
             .from('games')
             .select(`
                 id,
-                home_team:teams!home_team_id(name),
+                home_team:teams!home_team_id(name, stadium),
                 away_team:teams!away_team_id(name),
                 game_date,
                 location
@@ -72,7 +73,6 @@ export default function ShowGames({ params }: PageProps){
             console.log("Games error:", error);
             return;
         }
-
         setGames(data);
     }
 
@@ -134,6 +134,11 @@ export default function ShowGames({ params }: PageProps){
         if (!user){
             return; 
         }
+        const { data: homeTeam, error: teamError } = await supabase
+            .from('teams')
+            .select('stadium')
+            .eq('id', homeId)
+            .single();
         const { data, error } = await supabase
             .from('games')
             .insert({
@@ -141,7 +146,7 @@ export default function ShowGames({ params }: PageProps){
                 home_team_id: homeId,
                 away_team_id: awayId,
                 game_date: date.toLocaleDateString('en-CA'),
-                location: location, 
+                location: homeTeam?.stadium, 
             })
             .select()
             .single()
@@ -360,7 +365,8 @@ const styles = {
         position: 'relative',
         marginTop: '10px', 
         marginBottom: '10px', 
-        top: 0
+        top: 0,
+        textDecoration: 'underline'
     }, 
     subTitle: {
         fontSize: '24px',

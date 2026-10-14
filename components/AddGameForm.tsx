@@ -15,7 +15,6 @@ type AddGameFormProps = {
         homeId: string,
         awayId: string,
         date: Date,
-        location: string
     ) => Promise<void>;
     onCancel: () => void;
 };
@@ -29,12 +28,11 @@ export default function AddGameForm({
     const [homeId, setHomeId] = useState('');
     const [awayId, setAwayId] = useState('');
     const [date, setDate] = useState<Date | null>(new Date());
-    const [location, setLocation] = useState('');
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        if (!homeId || !awayId || !date || !location.trim()) {
+        if (!homeId || !awayId || !date) {
             return;
         }
 
@@ -46,12 +44,10 @@ export default function AddGameForm({
             homeId,
             awayId,
             date,
-            location
         );
 
         setHomeId('');
         setAwayId('');
-        setLocation('');
         setDate(new Date());
     }
 
@@ -96,13 +92,6 @@ export default function AddGameForm({
                         </option>
                     ))}
                 </select>
-                <input
-                    type="text"
-                    placeholder="Location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    style={styles.input}
-                />
                 <label>Choose Date:</label>
                 <DatePicker 
                     selected={date} 
