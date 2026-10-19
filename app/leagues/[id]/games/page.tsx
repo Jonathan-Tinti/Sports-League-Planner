@@ -215,20 +215,56 @@ export default function ShowGames({ params }: PageProps){
             <div style={styles.container}>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Games</h1>
-                    <div style={styles.subSubContainer}>
-                        {(games ?? []).map((game) => (
-                            <div key={game.id}>
-                                <div style={styles.subSubSubContainer} >
-                                    <p style={styles.text}>{game.home_team?.name} vs {game.away_team?.name}</p>
-                                    <p>Date: {new Date(game.game_date + 'T00:00:00').toLocaleDateString()}</p>
-                                    <p>Location: {game?.location}</p>
+                    <table style={styles.table}>
+                        <thead>
+                            <tr>
+                                <th style={styles.tableHeader}>Home Team</th>
+                                <th style={styles.tableHeader}>Away Team</th>
+                                <th style={styles.tableHeader}>Date</th>
+                                <th style={styles.tableHeader}>Location</th>
+                                {(isOwner || isCorR) && (
+                                    <th style={styles.tableHeader}>Actions</th>
+                                )}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {(games ?? []).map((game) => (
+                                <tr key={game.id}>
+                                    <td style={styles.tableCell}>
+                                        {game.home_team?.name}
+                                    </td>
+
+                                    <td style={styles.tableCell}>
+                                        {game.away_team?.name}
+                                    </td>
+
+                                    <td style={styles.tableCell}>
+                                        {new Date(
+                                            game.game_date + 'T00:00:00'
+                                        ).toLocaleDateString()}
+                                    </td>
+
+                                    <td style={styles.tableCell}>
+                                        {game.location}
+                                    </td>
+
                                     {(isOwner || isCorR) && (
-                                        <button style={styles.blueButton} onClick={() => router.push(`/game/${game.id}`)}>Add Game Info</button>
+                                        <td style={styles.tableCell}>
+                                            <button
+                                                style={styles.blueButton}
+                                                onClick={() =>
+                                                    router.push(`/game/${game.id}`)
+                                                }
+                                            >
+                                                Add Game Info
+                                            </button>
+                                        </td>
                                     )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                     {isOwner && (
                         <button style={styles.button} onClick={() => setGShowForm(true)}>
                             Create Game
@@ -355,10 +391,8 @@ const styles = {
         borderColor: '#000000',
         padding: '5px 10px',
         cursor: 'pointer',
-        top: '15px',
-        right: '15px', 
         borderRadius: '5px',
-        marginTop: '15px'
+        
     },
     subButton: {
         backgroundColor: '#eff5fb',
@@ -448,5 +482,28 @@ const styles = {
         backgroundColor: '#4CAF50',
         borderRadius: '10px',
         animation: 'loading 1.5s ease-in-out infinite',
+    },
+    table: {
+        width: '90%', 
+        borderCollapse: 'collapse',
+        backgroundColor: '#FFFFF0',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        margin: '10px'
+    },
+
+    tableHeader: {
+        backgroundColor: '#3f414d',
+        color: 'white',
+        padding: '12px',
+        textAlign: 'left' as const,
+        border: '1px solid #d1d5db',
+    },
+
+    tableCell: {
+        padding: '12px',
+        textAlign: 'left' as const,
+        border: '1px solid #d1d5db',
+        color: '#333333',
     },
 } satisfies Record<string, React.CSSProperties>
