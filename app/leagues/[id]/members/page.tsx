@@ -184,16 +184,24 @@ export default function ShowMembers({ params }: PageProps) {
             <div style={styles.container}>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Members</h1>
-                    <div style={styles.subSubContainer}>
-                        {members.map((member) => (
-                            <div style={styles.subSubSubContainer} key={member.user_id}>
-                                <p style={styles.text}>{member.users?.name}</p>
-                                <p>Email: {member.users?.email}</p>
-                                <p>Role: {member.role}</p>
-                            </div>
-
-                        ))}
-                    </div>
+                    <table style={styles.table}>
+                        <thead>
+                            <tr>
+                                <th style={styles.tableHeader}>Name</th>
+                                <th style={styles.tableHeader}>Email</th>
+                                <th style={styles.tableHeader}>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {members.map((member) => (
+                                <tr key={member.user_id}>
+                                    <td style={styles.tableCell}>{member.users?.name}</td>
+                                    <td style={styles.tableCell}>{member.users?.email}</td>
+                                    <td style={styles.tableCell}>{member.role}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                     {isOwner && (
                         <button style={styles.button} onClick={() => setShowForm(true)}>
                             Add Member
@@ -363,5 +371,28 @@ const styles = {
         backgroundColor: '#4CAF50',
         borderRadius: '10px',
         animation: 'loading 1.5s ease-in-out infinite',
+    },
+    table: {
+        width: '70%', 
+        borderCollapse: 'collapse',
+        backgroundColor: '#FFFFF0',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        margin: '10px'
+    },
+
+    tableHeader: {
+        backgroundColor: '#3f414d',
+        color: 'white',
+        padding: '12px',
+        textAlign: 'left' as const,
+        border: '1px solid #d1d5db',
+    },
+
+    tableCell: {
+        padding: '12px',
+        textAlign: 'left' as const,
+        border: '1px solid #d1d5db',
+        color: '#333333',
     },
 } satisfies Record<string, React.CSSProperties>

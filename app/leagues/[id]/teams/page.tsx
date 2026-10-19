@@ -14,6 +14,7 @@ type PageProps = {
 type Team = {
     id: string;
     name: string; 
+    stadium: string; 
 }; 
 
 export default function ShowTeams({ params }: PageProps){
@@ -44,7 +45,8 @@ export default function ShowTeams({ params }: PageProps){
             .from('teams')
             .select(`
                 id,
-                name
+                name,
+                stadium
                 `)
             .eq('league_id', id)
         if (error) {
@@ -82,7 +84,7 @@ export default function ShowTeams({ params }: PageProps){
         getUser();
     }, []); 
 
-    async function addTeam(teamName: string) {
+    async function addTeam(teamName: string, stadium: string) {
         const {id} = await params; 
         if (!user){
             return; 
@@ -91,7 +93,8 @@ export default function ShowTeams({ params }: PageProps){
             .from('teams')
             .insert({
                 league_id: id,
-                name: teamName
+                name: teamName, 
+                stadium: stadium
             })
             .select()
             .single()
@@ -160,16 +163,32 @@ export default function ShowTeams({ params }: PageProps){
             <div style={styles.container}>
                 <div style={styles.subContainer}>
                     <h1 style={styles.title}>Teams</h1>
-                    <div style={styles.subSubContainer}>
-                        {teams.map((team) => (
-                            <div key={team.id} style={styles.subSubContainer}>
-                                <div style={styles.subSubSubContainer}>
-                                    <p style={styles.text}>{team.name}</p>
-                                    <button style={styles.subButton} onClick={() => router.push(`/team/${team.id}`)}>Visit</button> 
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <table style={styles.table}>
+                        <thead>
+                            <tr>
+                                <th style={styles.tableHeader}>Name</th>
+                                <th style={styles.tableHeader}>Home Stadium</th>
+                                {(isOwner) && (
+                                    <th style={styles.tableHeader}>Actions</th>
+                                )}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {teams.map((team) => (
+                                <tr key={team.id}>
+                                    <td style={styles.tableCell}>
+                                        {team.name}
+                                    </td>
+                                    <td style={styles.tableCell}>
+                                        {team.stadium}
+                                    </td>
+                                    <td style={styles.tableCell}>
+                                        <button style={styles.blueButton} onClick={() => router.push(`/team/${team.id}`)}>Visit</button> 
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                     {isOwner && ( 
                         <button style={styles.button} onClick={() => setShowForm(true)}>
                             Create Team
@@ -283,6 +302,15 @@ const styles = {
         right: '15px', 
         borderRadius: '5px',
     }, 
+    blueButton: {
+        backgroundColor: '#e1edf8',
+        border: '1px solid', 
+        borderColor: '#000000',
+        padding: '5px 10px',
+        cursor: 'pointer',
+        borderRadius: '5px',
+        textAlign: 'center'
+    },
     subButton: {
         backgroundColor: '#e1edf8',
         paddingRight: '10px',
@@ -369,5 +397,28 @@ const styles = {
         backgroundColor: '#4CAF50',
         borderRadius: '10px',
         animation: 'loading 1.5s ease-in-out infinite',
+    },
+    table: {
+        width: '70%', 
+        borderCollapse: 'collapse',
+        backgroundColor: '#FFFFF0',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        margin: '10px'
+    },
+
+    tableHeader: {
+        backgroundColor: '#3f414d',
+        color: 'white',
+        padding: '12px',
+        textAlign: 'left' as const,
+        border: '1px solid #d1d5db',
+    },
+
+    tableCell: {
+        padding: '12px',
+        textAlign: 'left' as const,
+        border: '1px solid #d1d5db',
+        color: '#333333',
     },
 } satisfies Record<string, React.CSSProperties>

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 type AddTeamFormProps = {
-    onAddTeam: (teamName: string) => Promise<void>;
+    onAddTeam: (teamName: string, stadium: string) => Promise<void>;
     onCancel: () => void;
 };
 
@@ -13,6 +13,7 @@ export default function AddTeamForm({
 }: AddTeamFormProps) {
 
     const [teamName, setTeamName] = useState('');
+    const [stadium, setStadium] = useState(''); 
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -21,9 +22,10 @@ export default function AddTeamForm({
             return;
         }
 
-        await onAddTeam(teamName);
+        await onAddTeam(teamName, stadium);
 
         setTeamName('');
+        setStadium(''); 
     }
 
     return (
@@ -41,6 +43,13 @@ export default function AddTeamForm({
                     placeholder="Team name"
                     value={teamName}
                     onChange={(e) => setTeamName(e.target.value)}
+                    style={styles.input}
+                />
+                <input
+                    type="text"
+                    placeholder="Stadium"
+                    value={stadium}
+                    onChange={(e) => setStadium(e.target.value)}
                     style={styles.input}
                 />
 

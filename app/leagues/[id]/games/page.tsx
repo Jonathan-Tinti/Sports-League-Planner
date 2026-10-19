@@ -392,7 +392,7 @@ const styles = {
         padding: '5px 10px',
         cursor: 'pointer',
         borderRadius: '5px',
-        
+        textAlign: 'center'
     },
     subButton: {
         backgroundColor: '#eff5fb',
@@ -484,7 +484,7 @@ const styles = {
         animation: 'loading 1.5s ease-in-out infinite',
     },
     table: {
-        width: '90%', 
+        width: '70%', 
         borderCollapse: 'collapse',
         backgroundColor: '#FFFFF0',
         borderRadius: '10px',
