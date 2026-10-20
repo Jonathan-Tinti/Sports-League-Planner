@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import AddMemberForm from '@/components/AddMemberForm';
 import { useParams } from 'next/navigation';
+import { Plus } from 'lucide-react';
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -183,7 +184,12 @@ export default function ShowMembers({ params }: PageProps) {
             </div>
             <div style={styles.container}>
                 <div style={styles.subContainer}>
-                    <h1 style={styles.title}>Members</h1>
+                    <div style={styles.headerContainer}>
+                        <h1 style={styles.title}>Members</h1>
+                        {isOwner && (
+                            <Plus size={20} color="black" onClick={() => setShowForm(true)} style={{ cursor: 'pointer' }}/>
+                        )}
+                    </div>
                     <table style={styles.table}>
                         <thead>
                             <tr>
@@ -202,11 +208,6 @@ export default function ShowMembers({ params }: PageProps) {
                             ))}
                         </tbody>
                     </table>
-                    {isOwner && (
-                        <button style={styles.button} onClick={() => setShowForm(true)}>
-                            Add Member
-                        </button>
-                    )}
                 </div>
                 {showForm && (
                     <AddMemberForm
@@ -254,6 +255,12 @@ const styles = {
         width: '30%',
         height: '60px',
         flex: '1'
+    },
+    headerContainer: {
+        display: 'flex',
+        flexDirection: 'row', 
+        alignItems: 'center',
+        marginTop: '10px'
     },
     dummy: {
         flex: '1'
@@ -320,8 +327,7 @@ const styles = {
         fontSize: '28px',
         fontWeight: 'bold',
         position: 'relative',
-        marginTop: '10px', 
-        marginBottom: '10px', 
+        margin: '10px', 
         top: 0,
         textDecoration: 'underline'
     }, 

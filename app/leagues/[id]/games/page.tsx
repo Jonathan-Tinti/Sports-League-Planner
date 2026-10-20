@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import AddGameForm from '@/components/AddGameForm';
 import { useParams } from 'next/navigation';
+import { Plus } from 'lucide-react';
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -214,7 +215,10 @@ export default function ShowGames({ params }: PageProps){
             </div>
             <div style={styles.container}>
                 <div style={styles.subContainer}>
-                    <h1 style={styles.title}>Games</h1>
+                    <div style={styles.headerContainer}>
+                        <h1 style={styles.title}>Games</h1>
+                        <Plus size={20} color="black" onClick={() => setGShowForm(true)} style={{ cursor: 'pointer' }}/>
+                    </div>
                     <table style={styles.table}>
                         <thead>
                             <tr>
@@ -265,11 +269,6 @@ export default function ShowGames({ params }: PageProps){
                             ))}
                         </tbody>
                     </table>
-                    {isOwner && (
-                        <button style={styles.button} onClick={() => setGShowForm(true)}>
-                            Create Game
-                        </button>
-                    )}
                 </div>
                 {showGForm && (
                     <AddGameForm
@@ -313,6 +312,12 @@ const styles = {
         width: '30%',
         height: '60px',
         flex: '1'
+    },
+    headerContainer: {
+        display: 'flex',
+        flexDirection: 'row', 
+        alignItems: 'center',
+        marginTop: '10px'
     },
     dummy: {
         flex: '1'
@@ -408,8 +413,7 @@ const styles = {
         fontSize: '28px',
         fontWeight: 'bold',
         position: 'relative',
-        marginTop: '10px', 
-        marginBottom: '10px', 
+        margin: '10px', 
         top: 0,
         textDecoration: 'underline'
     }, 
