@@ -123,6 +123,7 @@ export default function ShowLeagues({ params }: PageProps) {
                         We will be competing in the {season} and we look forward to seeing you there!
                         If you want to be added as a player or a coach, contact the owner of the league and they will be able to add you in. 
                     </p>
+                    <button style={styles.button} onClick={() => router.push(`/leagues/${leagueID}/standings`)}>View Standings</button>
                 </div>
             </div>
         </div>

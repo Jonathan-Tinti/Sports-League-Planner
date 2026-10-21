@@ -273,7 +273,6 @@ const styles = {
         width: '80%',
         height: 'auto', 
         borderRadius: '10px',
-        // border: '1px solid',
         margin: '60px', 
     }, 
     subSubContainer: {
